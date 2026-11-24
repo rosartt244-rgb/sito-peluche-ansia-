@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Laska è un rifugio notturno per rallentare: peluche morbidi con un cuore che batte piano ed esercizi di respirazione guidati, per il rilassamento di mente e corpo.">
+    <title>Laska - Peluche per l'Ansia e Rilassamento Guidato</title>
+
+    <!-- Google Fonts: Outfit per tutto il testo; Fraunces (sotto) solo per i titoli grandi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- i titoli grandi: un serif morbido, come in una favola (styles.css, ✦ TITOLI) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=20261124a">
+
+    <!-- Model Viewer per il rendering 3D di heart_in_love.glb -->
+    <!-- model-viewer tolto: scaricava una libreria 3D intera per heart_in_love.glb, che nel sito non c'è (gli esercizi mostrano già il cuore di riserva).
+         Per rimetterlo: <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script> -->
+    <!-- Onboarding già completato? Allora non mostrarlo nemmeno per un istante -->
+    <script>
+        try {
+            var laskaSaved = JSON.parse(localStorage.getItem('laska.companion') || 'null');
+            if (laskaSaved && laskaSaved.done) document.documentElement.classList.add('ob-done');
+        } catch (e) { /* localStorage non disponibile */ }
+    </script>
+</head>
+
+<body>
+
+    <!-- AVVIO: il cielo si accende mentre il sito arriva. attesa.js lo toglie appena la pagina è pronta
+         (e dice se la connessione è lenta o manca); se attesa.js non arriva, il CSS lo toglie dopo 12 secondi. -->
+    <div class="lk-avvio" id="laskaAvvio" role="status" aria-live="polite">
+        <img src="assets/logo-laska-notte.png" alt="" width="146" height="56">
+        <span class="lk-respiro" aria-hidden="true"></span>
+        <p id="laskaAvvioTesto">Accendo il cielo…</p>
+    </div>
+    <script src="attesa.js?v=20261123a"></script>
+
+    <!-- ==========================================================
+         ONBOARDING — "Che Laska sei?" è la prima cosa che si vede.
+         Tre tappe: Scegli → Crea (colore, cuore, nome) → Entra.
+         Logica in onboarding.js. Chi ha già completato il percorso non lo vede
+         (classe .ob-done impostata nello <head>).
+         ========================================================== -->
+    <div class="ob" id="onboarding" role="dialog" aria-modal="true" aria-labelledby="obT-soglia" data-scene="soglia" data-stage="scopri">
+
+        <!-- Cielo notturno -->
+        <div class="ob-sky" aria-hidden="true">
+            <svg width="0" height="0" style="position:absolute">
+                <symbol id="obSparkle" viewBox="0 0 24 24">
+                    <path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/>
+                </symbol>
+                <symbol id="obHeart" viewBox="0 0 24 24">
+                    <path d="M12 21.2s-7.6-4.7-9.7-9.3C.8 8.5 2.9 4.8 6.4 4.8c2.1 0 3.6 1.2 4.4 2.6.4.7 1.9.7 2.3 0 .8-1.4 2.3-2.6 4.4-2.6 3.5 0 5.6 3.7 4.1 7.1-2.1 4.6-9.6 9.3-9.6 9.3z"/>
+                </symbol>
+                <!-- Icone delle risposte e degli oggetti (linee luminose) -->
+                <symbol id="obIcMente" viewBox="0 0 24 24"><path d="M8 21v-3.2A7.2 7.2 0 1 1 18.6 11l1.6 2.8H18.4V17a2 2 0 0 1-2 2H15v2"/><path d="M11.2 9.6a1.4 1.4 0 1 1 1.4 1.4 2.6 2.6 0 0 1-2.6-2.6 3.6 3.6 0 0 1 7.2 0"/></symbol>
+                <symbol id="obIcProtetto" viewBox="0 0 24 24"><path d="M12 2.8 19 5.8V11c0 5-3.4 8.6-7 10.2C8.4 19.6 5 16 5 11V5.8z"/><path d="M12 15.6s-3-1.8-3-4a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2.2-3 4-3 4z"/></symbol>
+                <symbol id="obIcCorpo" viewBox="0 0 24 24"><path d="M5.5 20.5h13l-2.2-9.5H7.7z"/><path d="M9.6 11a2.4 2.4 0 1 1 4.8 0"/><path d="M9 16h6"/></symbol>
+                <symbol id="obIcLavanda" viewBox="0 0 24 24"><path d="M12 21.5V7.5"/><path d="M12 7.5c-1.6-1-1.6-3.2 0-4.3 1.6 1.1 1.6 3.3 0 4.3z"/><path d="M12 11.5c-2.1 0-3.2-1.6-3.2-3.2 2.1 0 3.2 1.6 3.2 3.2zM12 11.5c2.1 0 3.2-1.6 3.2-3.2-2.1 0-3.2 1.6-3.2 3.2z"/><path d="M12 15.5c-2.1 0-3.2-1.6-3.2-3.2 2.1 0 3.2 1.6 3.2 3.2zM12 15.5c2.1 0 3.2-1.6 3.2-3.2-2.1 0-3.2 1.6-3.2 3.2z"/></symbol>
+                <symbol id="obIcMorbido" viewBox="0 0 24 24"><path d="M7 18.5h10a4 4 0 0 0 .6-8A5.6 5.6 0 0 0 7 9.6a4.5 4.5 0 0 0 0 8.9z"/><path d="M9.5 14.5c1.4 1 3.6 1 5 0"/></symbol>
+                <symbol id="obIcAbbraccio" viewBox="0 0 24 24"><path d="M3.5 11.5c0 5.2 3.8 8.5 8.5 8.5s8.5-3.3 8.5-8.5"/><path d="M3.5 11.5c0-2.2 2.2-3.2 3.8-2M20.5 11.5c0-2.2-2.2-3.2-3.8-2"/><path d="M12 15s-3-1.8-3-4a1.6 1.6 0 0 1 3-.8 1.6 1.6 0 0 1 3 .8c0 2.2-3 4-3 4z"/></symbol>
+                <symbol id="obIcTesta" viewBox="0 0 24 24"><path d="M8 21v-3.2A7.2 7.2 0 1 1 18.6 11l1.6 2.8H18.4V17a2 2 0 0 1-2 2H15v2"/><path d="M12.8 6.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z"/></symbol>
+                <symbol id="obIcSveglia" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.2"/><path d="M12 9.4V13l2.4 1.8"/><path d="M4 6.2 6.8 4M20 6.2 17.2 4"/></symbol>
+                <symbol id="obIcSonno" viewBox="0 0 24 24"><path d="M20 14.6A8.2 8.2 0 1 1 9.4 4a6.6 6.6 0 0 0 10.6 10.6z"/><path d="M14.5 4h3.2l-3.2 3.4h3.2"/></symbol>
+                <symbol id="obIcCopertina" viewBox="0 0 24 24"><path d="M3.5 7h13a3.2 3.2 0 0 1 0 6.4h-10a2.1 2.1 0 0 0 0 4.2h14"/><path d="M3.5 7v10.6"/><path d="M8 10.2h6"/></symbol>
+                <symbol id="obIcLucina" viewBox="0 0 24 24"><path d="M9 21h6M12 21v-4.5"/><path d="M16.8 9.2A4.8 4.8 0 1 1 11 3.2a3.8 3.8 0 0 0 5.8 6z"/><path d="M5 13.5l1.2-.6M19 13.5l-1.2-.6M12 14.4v-1"/></symbol>
+                <symbol id="obIcCuffie" viewBox="0 0 24 24"><path d="M4 15.5V12a8 8 0 0 1 16 0v3.5"/><path d="M4 15.5A2 2 0 0 1 6 13.5h1v6H6a2 2 0 0 1-2-2zM20 15.5a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2z"/></symbol>
+            </svg>
+            <div class="ob-nebbia"></div>
+            <div class="ob-luce"></div>
+            <div class="ob-dust ob-dust-a"></div>
+            <div class="ob-dust ob-dust-b"></div>
+            <canvas class="ob-stelle"></canvas>
+            <svg class="ob-sparkle" style="--x:8%;--y:16%;--s:22px;--d:0s;--o:.9"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:18%;--y:72%;--s:14px;--d:1.4s;--o:.6"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:31%;--y:34%;--s:10px;--d:2.2s;--o:.45"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:70%;--y:20%;--s:12px;--d:.7s;--o:.55"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:86%;--y:10%;--s:20px;--d:1.9s;--o:.9"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:92%;--y:62%;--s:16px;--d:2.8s;--o:.7"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:62%;--y:88%;--s:10px;--d:1.1s;--o:.4"><use href="#obSparkle"/></svg>
+            <svg class="ob-sparkle" style="--x:44%;--y:8%;--s:10px;--d:3.1s;--o:.5"><use href="#obSparkle"/></svg>
+        </div>
+
+        <!-- Luna: falce sottile che cresce fino all'ingresso -->
+        <svg class="ob-moon" viewBox="0 0 400 400" aria-hidden="true">
+            <defs>
+                <radialGradient id="obMoonFill" cx="35%" cy="60%" r="75%">
+                    <stop offset="0%" stop-color="#F8EEF8"/>
+                    <stop offset="100%" stop-color="#E2CBE8"/>
+                </radialGradient>
+            </defs>
+            <path id="obMoonLit" fill="url(#obMoonFill)" d="M200 50 A150 150 0 0 0 200 350 A120 150 0 0 1 200 50 Z"/>
+        </svg>
+
+        <!-- Barra superiore: le tre tappe, audio, salta -->
+        <div class="ob-top">
+            <ol class="ob-stages" aria-label="Le tappe">
+                <li class="ob-stage" data-stage="scopri"><span class="ob-stage-bar"><i></i></span><span class="ob-stage-name">Incontra</span></li>
+                <li class="ob-stage" data-stage="crea"><span class="ob-stage-bar"><i></i></span><span class="ob-stage-name">Conosci</span></li>
+                <li class="ob-stage" data-stage="entra"><span class="ob-stage-bar"><i></i></span><span class="ob-stage-name">Entra</span></li>
+            </ol>
+            <p class="ob-sr" id="obStepLabel" aria-live="polite"></p>
+            <div class="ob-top-actions">
+                <button class="ob-icon-btn" id="obAudioBtn" type="button" aria-pressed="true" aria-label="Audio attivo: tocca per silenziare">
+                    <svg class="ob-ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+                    <svg class="ob-ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+                </button>
+                <button class="ob-skip" id="obSkipBtn" type="button">Salta</button>
+            </div>
+        </div>
+
+        <!-- Il compagno (condiviso: creazione e ingresso) -->
+        <figure class="ob-companion" aria-hidden="true">
+            <div class="ob-companion-figure">
+                <img class="ob-companion-img is-shown" src="assets/compagni/peluche-classico.webp" alt="" draggable="false">
+                <img class="ob-companion-img" src="assets/compagni/peluche-classico.webp" alt="" draggable="false">
+                <span class="cuore-luce" aria-hidden="true"></span><span class="ob-companion-heart" aria-hidden="true"><img class="cuore-img" src="assets/cuori/cuore-rosa.webp" alt="" draggable="false"></span>
+            </div>
+            <span class="ob-invito-stella" aria-hidden="true"></span>
+            <div class="ob-companion-objects" id="obCompanionObjects"></div>
+            <figcaption class="ob-companion-name" id="obCompanionName"></figcaption>
+        </figure>
+
+        <!-- Battito -->
+        <div class="ob-bpm" aria-live="off">
+            <svg class="ob-bpm-heart" viewBox="0 0 24 24" aria-hidden="true"><use href="#obHeart"/></svg>
+            <span class="ob-bpm-num" id="obBpmNum">60</span>
+            <span class="ob-bpm-unit">BPM</span>
+        </div>
+
+        <!-- ================= SCOPRI ================= -->
+
+        <!-- Apertura: arrivi al Rifugio e (se vuoi) dici il tuo nome -->
+        <section class="ob-scene" data-scene="soglia" aria-labelledby="obT-soglia">
+            <!-- solo cielo: le stelle scorrono piano (styles.css, .ob-dust) e ogni tanto ne cade una -->
+            <div class="ob-paesaggio" aria-hidden="true">
+                <span class="obp-cadente"></span>
+                <span class="obp-cadente obp-cadente-2"></span>
+            </div>
+            <div class="ob-text">
+                <p class="ob-line ob-kicker" style="--i:0">Laska · un rifugio per le notti inquiete</p>
+                <h1 class="ob-line ob-title" id="obT-soglia" style="--i:.35">Ogni rifugio inizia da un <em class="lk-rosa">nome</em>.</h1>
+                <p class="ob-line ob-sub" style="--i:1">Il tuo sarà custodito tra le stelle.</p>
+            </div>
+            <div class="ob-controls" style="--after:2">
+                <!-- il nome, se vuoi: un campo di vetro con una stellina che si accende mentre scrivi (onboarding.js, syncWelcome) -->
+                <div class="ob-you">
+                    <label class="ob-sr" for="obYouInput">Il tuo nome (se vuoi)</label>
+                    <svg class="ob-campo-stella" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l1.9 7.6 7.6 1.9-7.6 1.9-1.9 7.6-1.9-7.6-7.6-1.9 7.6-1.9z"/></svg>
+                    <input class="ob-name-input ob-you-input" id="obYouInput" type="text" maxlength="24" autocomplete="given-name" spellcheck="false" enterkeyhint="go" placeholder="Il tuo nome, se vuoi">
+                </div>
+                <button class="ob-btn ob-btn-primary" type="button" data-action="enter">Entra piano</button>
+                <p class="ob-hint ob-headphones"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#obIcCuffie"/></svg>Metti le cuffie, se puoi</p>
+            </div>
+        </section>
+
+        <!-- Scegli il compagno -->
+        <section class="ob-scene" data-scene="compagno" aria-labelledby="obT-compagno">
+            <div class="ob-text">
+                <h2 class="ob-line ob-title" id="obT-compagno" style="--i:0">Stanotte sono svegli in tre.</h2>
+                <p class="ob-line ob-sub" style="--i:1">Chi vuoi accanto<span data-you-comma></span>?</p>
+            </div>
+            <!-- la scelta in tre pannelli (onboarding.js): gli altri compagni · il tuo, grande · colore e cuore -->
+            <div class="ob-config ob-line" style="--i:1" data-focus="compagno"></div>
+            <div class="ob-controls" style="--after:2">
+                <button class="ob-btn ob-btn-primary" type="button" data-action="next">Voglio conoscerlo</button>
+            </div>
+        </section>
+
+        <!-- ================= CREA ================= -->
+
+        <!-- Colore -->
+        <section class="ob-scene" data-scene="colore" aria-labelledby="obT-colore">
+            <div class="ob-text">
+                <h2 class="ob-line ob-title" id="obT-colore" style="--i:0">Nel Rifugio ce ne sono di tanti colori. Quale ti somiglia?</h2>
+                <p class="ob-line ob-sub ob-koala-note" style="--i:1">Il koala ha un solo colore: morbido come la nebbia.</p>
+            </div>
+            <div class="ob-config ob-line" style="--i:1" data-focus="colore"></div>
+            <div class="ob-controls" style="--after:1">
+                <button class="ob-btn ob-btn-primary" type="button" data-action="next">È questo</button>
+            </div>
+        </section>
+
+        <!-- Cuore -->
+        <section class="ob-scene" data-scene="cuore" aria-labelledby="obT-cuore">
+            <div class="ob-text">
+                <h2 class="ob-line ob-title" id="obT-cuore" style="--i:0">Appoggia la mano: senti il suo cuore?</h2>
+                <p class="ob-line ob-sub" style="--i:1">Ogni compagno ha un cuore di un colore diverso. È quello che lo fa brillare al buio.</p>
+            </div>
+            <div class="ob-config ob-line" style="--i:1" data-focus="cuore"></div>
+            <div class="ob-controls" style="--after:2">
+                <button class="ob-btn ob-btn-primary" type="button" data-action="next">È il suo</button>
+            </div>
+        </section>
+
+
+        <!-- Nome -->
+        <section class="ob-scene" data-scene="nome" aria-labelledby="obT-nome">
+            <div class="ob-text">
+                <h2 class="ob-line ob-title" id="obT-nome" style="--i:0">Qui nessuno gli ha ancora dato un nome. Lo farai tu?</h2>
+                <p class="ob-line ob-sub" style="--i:1">Sarà il nome che userete solo voi due.</p>
+            </div>
+            <div class="ob-stage-spacer"></div>
+            <div class="ob-controls" style="--after:1">
+                <label class="ob-sr" for="obNameInput">Nome del tuo compagno</label>
+                <input class="ob-name-input" id="obNameInput" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Scrivi un nome…">
+                <!-- i nomi suggeriti e, accanto, la scelta discreta lui / lei (facoltativa) -->
+                <div class="ob-controls ob-controls-row">
+                    <div class="ob-suggestions" id="obSuggestions" aria-label="Suggerimenti">
+                        <button type="button">Luna</button>
+                        <button type="button">Nuvola</button>
+                        <button type="button">Miele</button>
+                    </div>
+                    <div class="ob-suggestions ob-genere" id="obGenere" role="radiogroup" aria-label="Il tuo compagno è">
+                        <button type="button" role="radio" data-genere="lui" aria-checked="false">lui</button>
+                        <button type="button" role="radio" data-genere="lei" aria-checked="false">lei</button>
+                    </div>
+                </div>
+                <button class="ob-btn ob-btn-primary" type="button" data-action="next" id="obPiacereBtn">Piacere</button>
+            </div>
+        </section>
+
+
+        <!-- Ingresso -->
+        <section class="ob-scene" data-scene="ingresso" aria-labelledby="obT-ingresso">
+            <div class="ob-text">
+                <h2 class="ob-line ob-title" id="obT-ingresso" style="--i:0"><span data-name>Miele</span> <span id="obSceltoTe">ti ha scelto anche lui.</span></h2>
+                <p class="ob-line ob-sub" style="--i:1">Ma stanotte non riesce a dormire. Vieni?</p>
+            </div>
+            <div class="ob-stage-spacer"></div>
+            <div class="ob-controls" style="--after:2">
+                <button class="ob-btn ob-btn-primary" type="button" data-action="finish">Resto con te</button>
+            </div>
+            <!-- poi il compagno si illumina e ti porta nella sua cameretta (onboarding.js, invito; solo se il 3D c'è) -->
+            <div class="ob-text ob-invito" hidden>
+                <h2 class="ob-line ob-title" id="obT-invito" style="--i:0">«Grazie. Vieni nella mia <em class="lk-rosa">cameretta</em>?»</h2>
+                <p class="ob-line ob-sub" id="obInvitoSub" style="--i:1">Segui la stellina: <span data-name>Miele</span> ti fa strada.</p>
+            </div>
+            <div class="ob-controls ob-invito" hidden style="--after:1.5">
+                <button class="ob-btn ob-btn-primary" type="button" data-action="stanza" aria-describedby="obT-invito obInvitoSub">Entra nella cameretta</button>
+                <button class="ob-btn ob-btn-ghost" type="button" data-action="dopo">Più tardi</button>
+            </div>
+        </section>
+
+        <!-- Frecce -->
+        <button class="ob-arrow ob-arrow-prev" id="obPrevBtn" type="button" aria-label="Indietro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="ob-arrow ob-arrow-next" id="obNextBtn" type="button" aria-label="Avanti">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+
+    <!-- Sfondo con sfere fluttuanti sfocate (Soft Orbs Effect) -->
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+
+
+
+
+    <!-- Velo luminoso che accompagna il passaggio tra le pagine -->
+    <div class="nav-veil" id="navVeil" aria-hidden="true"></div>
+
+    <!-- Indicatore discreto del capitolo in cui ti trovi -->
+    <p class="chapter-indicator" id="chapterIndicator" data-cap="cap-battito" aria-hidden="true"><span>I</span> Il tuo posto</p>
+
+    <!-- Contenitore Principale -->
+    <main class="main-content">
+
+        <!-- Il marchio: discreto, in alto a sinistra; riporta all'inizio -->
+        <a class="brand-laska" href="#cap-battito" data-goto="battito" aria-label="Laska, torna all'inizio">
+            <!-- il logo (nuvola e stella); questa versione ha le lettere chiare per la notte del sito,
+                 l'originale è assets/logo-laska.png -->
+            <img class="brand-logo" src="assets/logo-laska-notte.png" alt="" width="292" height="112">
+        </a>
+
+        <!-- HEADER di Navigazione Sticky -->
+        <header class="logo-header">
+            <div class="header-right">
+                <!-- Suoni: spenti finché non li accendi tu (la scelta resta salvata) -->
+                <button class="suoni-btn" id="suoniBtn" type="button" aria-pressed="false" title="Musica di sottofondo e battito">
+                    <svg class="icon suoni-icona suoni-icona-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                    <svg class="icon suoni-icona suoni-icona-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    <span class="suoni-testo">Attiva i suoni</span>
+                </button>
+
+
+
+                <!-- Pulsante Carrello -->
+                <!-- compare quando c'è qualcuno nel carrello, o dopo che hai visto i compagni tra le stelle (app.js) -->
+                <button class="cart-btn" id="cartBtn" aria-label="Apri carrello" aria-expanded="false"
+                    aria-controls="cartDrawer" hidden>
+                    <span class="cart-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg></span>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </button>
+
+                <!-- Pulsante Menu Hamburger -->
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Apri menu di navigazione"
+                    aria-expanded="false" aria-controls="sideMenu">
+                    <span class="hamburger-line line-1"></span>
+                    <span class="hamburger-line line-2"></span>
+                    <span class="hamburger-line line-3"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Vista Principale (Home) -->
+        <div id="home-view" class="page-view active visible">
+
+            <!-- Scorrimento orizzontale: l'hero resta fermo come sfondo, le sezioni entrano da destra (horizontal.js) -->
+            <div class="h-scroll" id="hScroll">
+            <div class="h-sticky">
+            <!-- SECTION 1 — HERO: THE HEARTBEAT -->
+            <section class="hero-section chapter" id="cap-battito" data-chapter="I" data-chapter-name="Il tuo posto" aria-label="Capitolo I, Il tuo posto">
+                <!-- Cielo stellato della home (stile "glimmer") -->
+                <div class="hero-sky" aria-hidden="true">
+                    <svg width="0" height="0" style="position:absolute">
+                        <symbol id="laskaSparkle" viewBox="0 0 24 24">
+                            <path d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/>
+                        </symbol>
+                    </svg>
+                    <div class="sky-dust sky-dust-a"></div>
+                    <div class="sky-dust sky-dust-b"></div>
+                    <svg class="sky-sparkle" style="--x:10%;--y:18%;--s:22px;--d:0s;--o:0.95"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:22%;--y:62%;--s:16px;--d:1.4s;--o:0.7"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:15%;--y:84%;--s:12px;--d:2.6s;--o:0.5"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:30%;--y:30%;--s:12px;--d:0.8s;--o:0.5"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:71%;--y:22%;--s:14px;--d:2.1s;--o:0.6"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:84%;--y:12%;--s:22px;--d:0.4s;--o:0.95"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:90%;--y:58%;--s:18px;--d:1.7s;--o:0.8"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:78%;--y:82%;--s:12px;--d:3s;--o:0.5"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:64%;--y:90%;--s:10px;--d:1.1s;--o:0.4"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:38%;--y:86%;--s:10px;--d:2.3s;--o:0.4"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle" style="--x:95%;--y:34%;--s:10px;--d:0.9s;--o:0.45"><use href="#laskaSparkle"/></svg>
+                    <!-- Stelle che si accendono solo quando ti calmi -->
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:6%;--y:40%;--s:12px;--d:1.3s;--o:calc(.7 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:20%;--y:8%;--s:10px;--d:2.4s;--o:calc(.6 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:46%;--y:12%;--s:14px;--d:.5s;--o:calc(.8 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:58%;--y:6%;--s:10px;--d:3.2s;--o:calc(.6 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:63%;--y:36%;--s:12px;--d:1.9s;--o:calc(.7 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:80%;--y:46%;--s:10px;--d:2.8s;--o:calc(.55 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:97%;--y:8%;--s:12px;--d:.2s;--o:calc(.7 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                    <svg class="sky-sparkle sky-sparkle-calm" style="--x:3%;--y:70%;--s:10px;--d:1.6s;--o:calc(.6 * var(--calm, 0))"><use href="#laskaSparkle"/></svg>
+                </div>
+
+                <!-- Il prato della notte: erba dipinta a mano (hand_painted_grasses.glb) che ondeggia, con le lucciole (prato.js) -->
+                <div class="hero-meadow" id="heroMeadow" aria-hidden="true"><canvas></canvas></div>
+
+                <!-- Luna luminosa con il coniglietto che dorme davanti -->
+                <div class="hero-moon-scene">
+                    <!-- alone che respira: uno strato a parte, dietro la luna -->
+                    <div class="hero-moon hero-moon-strato hero-moon-alone" aria-hidden="true"><svg class="moon-strato-svg moon-alone-svg" viewBox="0 0 400 400"><circle class="moon-alone-cerchio" cx="200" cy="200" r="198" fill="url(#moonHalo)"/></svg></div>
+                    <svg class="hero-moon" viewBox="0 0 400 400" aria-hidden="true">
+                        <defs>
+                            <radialGradient id="moonFill" cx="30%" cy="45%" r="80%">
+                                <stop offset="0%" class="moon-stop-1"/>
+                                <stop offset="100%" class="moon-stop-2"/>
+                            </radialGradient>
+                            <!-- bordo più scuro, come una sfera vera -->
+                            <radialGradient id="moonLimb" cx="50%" cy="50%" r="50%">
+                                <stop offset="62%" stop-color="#3B2A66" stop-opacity="0"/>
+                                <stop offset="100%" stop-color="#3B2A66" stop-opacity=".18"/>
+                            </radialGradient>
+                            <radialGradient id="moonCrater" cx="58%" cy="60%" r="55%">
+                                <stop offset="0%" stop-color="#8E78B4" stop-opacity=".38"/>
+                                <stop offset="70%" stop-color="#8E78B4" stop-opacity=".16"/>
+                                <stop offset="88%" stop-color="#FFFFFF" stop-opacity=".35"/>
+                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                            </radialGradient>
+                            <radialGradient id="moonHalo" cx="50%" cy="50%" r="50%">
+                                <stop offset="55%" stop-color="#E9DCFF" stop-opacity=".0"/>
+                                <stop offset="72%" stop-color="#E9DCFF" stop-opacity=".22"/>
+                                <stop offset="100%" stop-color="#B89CF0" stop-opacity="0"/>
+                            </radialGradient>
+                            <!-- i "mari" della luna: macchie morbide e irregolari -->
+                            <filter id="moonMaria" x="0" y="0" width="100%" height="100%">
+                                <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="4" seed="9" result="n"/>
+                                <feColorMatrix in="n" type="matrix" values="0 0 0 0 .55  0 0 0 0 .47  0 0 0 0 .7  0 0 0 -2.6 1.55"/>
+                                <feGaussianBlur stdDeviation="2"/>
+                            </filter>
+                            <!-- polvere di luce che scintilla sulla superficie -->
+                            <filter id="moonSpeckles" x="0" y="0" width="100%" height="100%">
+                                <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" result="n"/>
+                                <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 9 -5.9"/>
+                            </filter>
+                            <filter id="moonSoftEdge" x="-10%" y="-10%" width="120%" height="120%">
+                                <feGaussianBlur stdDeviation="1.5"/>
+                            </filter>
+                            <!-- la fase: la parte illuminata, con il confine sfumato (aggiornata da uno script) -->
+                            <mask id="moonPhase" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
+                                <path id="heroMoonLit" d="M200 50 A150 150 0 0 0 200 350 A120 150 0 0 1 200 50 Z" fill="#fff" filter="url(#moonSoftEdge)"/>
+                            </mask>
+                            <clipPath id="moonDisc"><circle cx="200" cy="200" r="150"/></clipPath>
+                        </defs>
+                        <!-- la parte in ombra si intravede appena (luce cinerea) -->
+                        <g class="moon-earthshine" clip-path="url(#moonDisc)">
+                            <circle cx="200" cy="200" r="150" fill="#2B2150"/>
+                            <rect x="50" y="50" width="300" height="300" filter="url(#moonMaria)" opacity=".5"/>
+                        </g>
+                        <!-- la parte illuminata: superficie, mari, crateri, bordo -->
+                        <g class="moon-lit" mask="url(#moonPhase)">
+                            <g clip-path="url(#moonDisc)">
+                                <circle cx="200" cy="200" r="150" fill="url(#moonFill)"/>
+                                <rect class="moon-maria" x="50" y="50" width="300" height="300" filter="url(#moonMaria)"/>
+                                <g class="moon-craters"><circle cx="97.1" cy="231.7" r="14" fill="url(#moonCrater)"/><circle cx="73.0" cy="239.7" r="6" fill="url(#moonCrater)"/><circle cx="241.1" cy="294.4" r="5" fill="url(#moonCrater)"/><circle cx="265.8" cy="244.2" r="4" fill="url(#moonCrater)"/><circle cx="68.2" cy="167.3" r="3" fill="url(#moonCrater)"/><circle cx="125.2" cy="148.9" r="14" fill="url(#moonCrater)"/><circle cx="135.9" cy="107.1" r="5" fill="url(#moonCrater)"/><circle cx="106.1" cy="108.3" r="4" fill="url(#moonCrater)"/><circle cx="258.4" cy="222.9" r="6" fill="url(#moonCrater)"/><circle cx="97.1" cy="125.6" r="9" fill="url(#moonCrater)"/><circle cx="77.1" cy="248.2" r="6" fill="url(#moonCrater)"/><circle cx="135.3" cy="121.5" r="4" fill="url(#moonCrater)"/><circle cx="126.8" cy="220.1" r="4" fill="url(#moonCrater)"/><circle cx="178.8" cy="122.0" r="6" fill="url(#moonCrater)"/><circle cx="175.3" cy="198.0" r="4" fill="url(#moonCrater)"/><circle cx="92.7" cy="277.5" r="11" fill="url(#moonCrater)"/><circle cx="217.1" cy="207.6" r="3" fill="url(#moonCrater)"/><circle cx="231.5" cy="334.9" r="3" fill="url(#moonCrater)"/><circle cx="60.1" cy="226.7" r="11" fill="url(#moonCrater)"/><circle cx="105.2" cy="252.3" r="6" fill="url(#moonCrater)"/><circle cx="213.3" cy="126.5" r="4" fill="url(#moonCrater)"/><circle cx="193.4" cy="216.4" r="11" fill="url(#moonCrater)"/><circle cx="202.5" cy="150.6" r="6" fill="url(#moonCrater)"/><circle cx="196.0" cy="185.5" r="14" fill="url(#moonCrater)"/><circle cx="217.7" cy="142.0" r="6" fill="url(#moonCrater)"/><circle cx="140.6" cy="220.4" r="5" fill="url(#moonCrater)"/></g>
+                                <rect class="moon-dust" x="50" y="50" width="300" height="300" filter="url(#moonSpeckles)"/>
+                                <circle cx="200" cy="200" r="150" fill="url(#moonLimb)"/>
+                            </g>
+                        </g>
+                    </svg>
+                    <!-- la luna 3D (luna3d.js): un'immagine disegnata una volta dal modello, al posto della luna qui sopra -->
+                    <img class="hero-moon hero-moon-3d" alt="" aria-hidden="true" hidden decoding="async" draggable="false">
+                    <!-- scintillii lungo il bordo luminoso -->
+                    <svg class="hero-moon hero-moon-strato hero-moon-scintille" viewBox="0 0 400 400" aria-hidden="true">
+                        <g class="moon-glints"><path class="moon-glint" style="--gd:0s" transform="translate(31.4 251.8) scale(0.583)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/><path class="moon-glint" style="--gd:1.3s" transform="translate(22.5 145.9) scale(0.375)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/><path class="moon-glint" style="--gd:2.4s" transform="translate(71.5 334.2) scale(0.333)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/><path class="moon-glint" style="--gd:3.1s" transform="translate(64.3 85.2) scale(0.458)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/><path class="moon-glint" style="--gd:0.7s" transform="translate(153.9 367.3) scale(0.292)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/><path class="moon-glint" style="--gd:4s" transform="translate(133.1 23.1) scale(0.333)" d="M12 0C12.9 7.6 16.4 11.1 24 12C16.4 12.9 12.9 16.4 12 24C11.1 16.4 7.6 12.9 0 12C7.6 11.1 11.1 7.6 12 0Z"/></g>
+                    </svg>
+                    <div class="hero-ground-glow" aria-hidden="true"></div>
+                    <div class="hero-bunny-wrap" data-animal="peluche">
+                        <!-- la nuvoletta su cui dorme e fluttua -->
+                        <svg class="hero-bunny-cloud" viewBox="0 0 200 110" aria-hidden="true"><use href="#laskaCloud"/></svg>
+                        <img src="assets/compagni/peluche-classico.webp" alt="Miele, che dorme" class="hero-bunny" draggable="false">
+                        <span class="cuore-luce" aria-hidden="true"></span><span class="hero-bunny-heart" aria-hidden="true"><img class="cuore-img" src="assets/cuori/cuore-rosa.webp" alt="" draggable="false"></span>
+                        <p class="hero-companion-name" aria-live="polite">Miele</p>
+                    </div>
+                </div>
+
+                <!-- I pensieri del compagno: parla lui, un pensiero alla volta (notte.js) -->
+                <div class="laska-pensieri" id="laskaPensieri" role="group" aria-label="I pensieri del tuo compagno">
+                    <!-- la nuvola: il bagliore sta sul gruppo; aloni e luce respirano su strati a parte,
+                         così il disegno (con le sue sfumature) non si rifà a ogni istante -->
+                    <div class="lp-nuvola-gruppo" aria-hidden="true">
+                        <svg class="lp-nuvola lp-strato lp-strato-largo" viewBox="0 0 340 210" preserveAspectRatio="none" aria-hidden="true"><use href="#lpForma" fill="#B996FF" filter="url(#lpAloneLargo)"/></svg>
+                        <svg class="lp-nuvola lp-strato lp-strato-alone" viewBox="0 0 340 210" preserveAspectRatio="none" aria-hidden="true"><use href="#lpForma" fill="#D9C6FF" filter="url(#lpAlone)"/></svg>
+                        <svg class="lp-nuvola" viewBox="0 0 340 210" preserveAspectRatio="none" aria-hidden="true">
+                            <defs>
+                                <!-- la forma: un cuscino tondo con due soli sbuffi in alto -->
+                                <g id="lpForma">
+                                    <rect x="22" y="66" width="296" height="118" rx="59"/>
+                                    <circle cx="124" cy="76" r="50"/>
+                                    <circle cx="214" cy="68" r="56"/>
+                                </g>
+                                <linearGradient id="lpPelle" x1="0" y1="0" x2="0" y2="210" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0" stop-color="#FFFFFF"/>
+                                    <stop offset=".55" stop-color="#F8F3FF"/>
+                                    <stop offset="1" stop-color="#E9DEFC"/>
+                                </linearGradient>
+                                <filter id="lpMorbido" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>
+                                <filter id="lpAlone" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="12"/></filter>
+                                <filter id="lpAloneLargo" x="-50%" y="-60%" width="200%" height="220%"><feGaussianBlur stdDeviation="22"/></filter>
+                                <radialGradient id="lpCuore" cx="50%" cy="55%" r="55%">
+                                    <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
+                                    <stop offset=".6" stop-color="#FBF7FF" stop-opacity=".35"/>
+                                    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                            <use class="lp-corpo" href="#lpForma" fill="url(#lpPelle)" filter="url(#lpMorbido)"/>
+                            <ellipse cx="174" cy="74" rx="96" ry="26" fill="#FFFFFF" opacity=".75" filter="url(#lpAlone)"/>
+                        </svg>
+                        <svg class="lp-nuvola lp-strato lp-strato-luce" viewBox="0 0 340 210" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="172" cy="120" rx="128" ry="58" fill="url(#lpCuore)" filter="url(#lpAlone)"/></svg>
+                    </div>
+                    <span class="lp-bolla lp-b1" aria-hidden="true"></span>
+                    <span class="lp-bolla lp-b2" aria-hidden="true"></span>
+                    <span class="lp-bolla lp-b3" aria-hidden="true"></span>
+                    <div class="lp-dentro">
+                        <p class="lp-testo" id="lpTesto" aria-live="off">Sei rimasto. Grazie.</p>
+                        <div class="lp-azioni">
+                            <button type="button" class="lp-vai" id="lpVai" hidden>Respiriamo insieme</button>
+                        </div>
+                        <div class="lp-punti" id="lpPunti" role="group" aria-label="Scegli un pensiero"></div>
+                    </div>
+                </div>
+                <!-- il prato scuro che cresce quando scendi (notte.js) -->
+                <div class="nv-erba nv-erba-hero" aria-hidden="true"><svg viewBox="0 0 1440 240" preserveAspectRatio="none"><use href="#nvGrass"/></svg></div>
+                <!-- Le stelle delle sezioni: si accendono una dopo l'altra e un filo di luce le unisce (notte.js).
+                     Sono ancora i pulsanti "hero-cloud" di prima: cambiano solo forma. -->
+                <nav class="hero-clouds is-stars" aria-label="Sezioni">
+                    <p class="ob-sr" id="cloudNews" aria-live="polite"></p>
+                    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+                        <defs>
+                            <radialGradient id="cloudFill" cx="45%" cy="35%" r="75%">
+                                <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".95"/>
+                                <stop offset="55%" stop-color="#E9DBFF" stop-opacity=".85"/>
+                                <stop offset="100%" stop-color="#B79AF0" stop-opacity=".7"/>
+                            </radialGradient>
+                        </defs>
+                        <filter id="cloudFx" x="-30%" y="-40%" width="160%" height="180%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="soft"/>
+                            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="7" result="noise"/>
+                            <feDisplacementMap in="soft" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" result="fluff"/>
+                            <feGaussianBlur in="fluff" stdDeviation="1.4"/>
+                        </filter>
+                        <linearGradient id="cloudShade" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFFFFF"/>
+                            <stop offset="55%" stop-color="#F3EAFF"/>
+                            <stop offset="100%" stop-color="#B9A0EE"/>
+                        </linearGradient>
+                        <symbol id="laskaCloud" viewBox="0 0 200 110">
+                            <g filter="url(#cloudFx)" fill="url(#cloudShade)">
+                                <ellipse cx="100" cy="78" rx="78" ry="20"/>
+                                <circle cx="62" cy="66" r="25"/>
+                                <circle cx="92" cy="50" r="32"/>
+                                <circle cx="128" cy="56" r="27"/>
+                                <circle cx="152" cy="70" r="18"/>
+                                <circle cx="40" cy="76" r="15"/>
+                            </g>
+                            <g filter="url(#cloudFx)" fill="#FFFFFF" opacity=".75">
+                                <circle cx="86" cy="44" r="16"/>
+                                <circle cx="120" cy="50" r="12"/>
+                            </g>
+                        </symbol>
+                    </svg>
+                    <!-- la costellazione (disegnata da notte.js): una traccia punteggiata ne mostra già la forma;
+                         i fili di luce compaiono solo tra due stelle accese, cioè tra due sezioni finite -->
+                    <svg class="hero-costellazione" aria-hidden="true">
+                        <path class="hc-filo hc-lieve" data-a="cameretta" data-b="d0" pathLength="1"/>
+                        <path class="hc-filo hc-lieve" data-a="cameretta" data-b="d1" pathLength="1"/>
+                    </svg>
+                    <span class="hc-deco" data-deco="d0" data-of="cameretta" aria-hidden="true"></span>
+                    <span class="hc-deco" data-deco="d1" data-of="cameretta" aria-hidden="true"></span>
+                    <!-- la cameretta (cameretta.js) è una stella: si entra solo da qui (e dalla stessa lista nel menu, che su telefono fa da costellazione) -->
+                    <button type="button" class="hero-cloud" data-goto="cameretta" style="--x:48%;--y:22%;--w:200px;--fd:-1.2s">
+                        <svg class="hero-cloud-shape" viewBox="0 0 200 110" aria-hidden="true"><use href="#laskaCloud"/></svg><span class="hero-cloud-label"><small>☾</small>La mia cameretta</span>
+                    </button>
+                </nav>
+
+                <!-- In fondo alla scena solo la freccia che scende tra le stelle (notte.js). Il compagno agitato
+                     chiede aiuto nella nuvoletta, e la risposta è respirare insieme nel capitolo II: alla fine
+                     di un esercizio si calma (app.js, fineEsercizio → LaskaCalm) e solo allora arriva l'alba -->
+                <div class="hero-scroll-cue hero-invito" id="heroScrollCue">
+                    <button type="button" class="hero-giu" data-nv-to="nvStelle" data-nv-mio aria-label="Scendi tra le stelle: conosci tutti i compagni">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                </div>
+                
+
+
+
+                <!-- Blurry Yellow Heart Background Glow -->
+                <div class="hero-blur-yellow-heart">
+                    <img src="yellow heart.png" alt="Cuore Giallo Sfocato">
+                </div>
+
+                <!-- Dynamic BPM Progress Bar (Calm to Agitated) -->
+
+
+
+                <div class="hero-container">
+                    <!-- Visualizzatore 3D centrato -->
+                    <div class="heart-viewer-container" id="heartViewerContainer">
+                        <!-- Floating Name and Streak Badge (Phases 1 & 4) -->
+                        <div class="plush-floating-name" id="plushFloatingName"></div>
+                        <div class="plush-streak-badge" id="plushStreakBadge"></div>
+
+                        <!-- Breathing Aura Glow (Phase 4 Extension) -->
+                        <div class="breathing-aura-glow" id="breathingAuraGlow"></div>
+
+                        <!-- 4-7-8 Breathing Ring SVG (Phase 4) -->
+                        <svg class="breathing-ring-svg" id="breathingRingSvg" viewBox="0 0 320 320">
+                            <circle class="ring-bg" cx="160" cy="160" r="145"></circle>
+                            <circle class="ring-active" id="breathingRingActive" cx="160" cy="160" r="145"></circle>
+                        </svg>
+
+                        <!-- Plush and features wrapped (Phase 1) -->
+                        <div class="plush-wrapper enlarged" id="plushWrapper">
+                            <!-- Stage Peluche 3D Interattivo -->
+                            <div class="plush-3d-stage" id="plush3dStage">
+                                <div class="plush-3d-card" id="plush3dCard">
+                                    <div class="plush-3d-glare" id="plush3dGlare"></div>
+                                    <img src="assets/compagni/peluche-classico.webp" alt="Il tuo compagno" id="heroPelucheImg" class="hero-peluche-img plush-3d-img interactive-plush" draggable="false">
+                                </div>
+                                <div class="plush-3d-shadow" id="plush3dShadow"></div>
+                            </div>
+
+                            <!-- Floating stars container (Phase 2) -->
+                            <div class="plush-stars-container" id="plushStarsContainer"></div>
+
+                            <!-- Badge Istruzioni e Controllo 3D -->
+                            <div class="plush-3d-badge-container">
+                                <button id="toggle3dAutoRotateBtn" class="btn-3d-control" aria-label="Attiva/Disattiva Rotazione Automatica 3D" title="Clicca per attivare/disattivare rotazione automatica">
+                                    <span class="badge-icon">🔄</span>
+                                    <span class="badge-text"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Modello 3D (Nascosto) -->
+                        <model-viewer id="heartViewer" class="enlarged" src="heart_in_love.glb" scale="0.6 0.6 0.6"
+                            alt="Modello 3D di un cuore per rilassamento" auto-rotate auto-rotate-delay="0"
+                            rotation-per-second="15deg" camera-controls interaction-prompt="none" shadow-intensity="0"
+                            shadow-softness="0.8" environment-image="neutral" exposure="1.0" disable-zoom
+                            aria-label="Modello 3D del cuore" style="display:none;">
+                        </model-viewer>
+
+                        <!-- Speech Bubble per il Peluche -->
+                        <div class="plush-speech-bubble" id="plushSpeechBubble">
+                            Il cuore mi corre e non so fermarlo. Mi aiuti?
+                        </div>
+
+                        <!-- Video Coniglio Cuore che Batte (Nascosto a favore del Peluche 3D) -->
+                        <video id="homeRabbitVideo" src="cuore che batte.mov" autoplay loop muted playsinline style="width: 100%; max-width: 400px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin: 0 auto; display: none;"></video>
+                    </div>
+
+                    <!-- Interactive Calming Panel (Phase 4 Extension) -->
+                    <div class="calming-panel-card" id="calmingPanelCard">
+                        <!-- Header of the Card -->
+                        <div class="calming-panel-header">
+                            <div class="bpm-display-row">
+                                <span class="heart-pulse-icon">💓</span>
+                                <div class="bpm-display-card">
+                                    <span class="bpm-number" id="bpmNumber">--</span>
+                                    <span class="bpm-unit">BPM</span>
+                                </div>
+                            </div>
+                            <div class="mute-volume-wrapper">
+                                <span class="calming-status-badge" id="bpmStatusLabel">Miele è ancora inquieto</span>
+                                <button class="mute-btn" id="muteHeartBtn" aria-label="Silenzia battito">
+                                    <svg class="icon icon-volume" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path class="volume-up" d="M11 5L6 9H2v6h4l5 4V5z" />
+                                        <path class="volume-waves"
+                                            d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+                                        <path class="volume-mute" d="M23 9l-6 6m0-6l6 6" style="display: none;" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Method Tabs/Selectors -->
+                        <div class="calming-methods-tabs">
+                            <button class="method-tab active" data-method="breathe" id="tabBreathe">Respira</button>
+                            <button class="method-tab" data-method="stroke" id="tabStroke">Accarezza</button>
+                            <button class="method-tab" data-method="sync" id="tabSync">Sintonizza</button>
+                        </div>
+
+                        <!-- Method Content Areas -->
+                        <div class="method-content-container">
+
+                            <!-- METHOD 1: BREATHE -->
+                            <div class="method-content active" id="method-breathe">
+                                <p class="method-instruction">Tieni premuto mentre inspiri. Lascia andare quando espiri.</p>
+                                <button class="calming-action-btn breathe-trigger-btn" id="breatheHoldBtn">
+                                    <span class="btn-text" id="breatheBtnText">Inspira con me</span>
+                                    <span class="btn-progress" id="breatheBtnProgress"></span>
+                                </button>
+                                <div class="breathing-progress-dots">
+                                    <span class="breath-dot active" id="dot-0"></span>
+                                    <span class="breath-dot" id="dot-1"></span>
+                                    <span class="breath-dot" id="dot-2"></span>
+                                </div>
+                            </div>
+
+                            <!-- METHOD 2: STROKE -->
+                            <div class="method-content" id="method-stroke">
+                                <p class="method-instruction">Accarezzalo piano, col dito o col mouse. Più lento vai, più si calma.</p>
+                                <div class="stroke-sensing-area" id="strokeArea">
+                                    <span class="stroke-label" id="strokeStatus">Piano, così</span>
+                                    <div class="stroke-sparkle-container" id="strokeSparkles"></div>
+                                </div>
+                                <div class="stroke-progress-bar-container">
+                                    <div class="stroke-progress-bar" id="strokeProgressBar"></div>
+                                </div>
+                            </div>
+
+                            <!-- METHOD 3: SYNC -->
+                            <div class="method-content" id="method-sync">
+                                <p class="method-instruction">Tocca piano, al ritmo del suo cuore. Uno, poi un altro.</p>
+                                <div class="sync-target-indicator">
+                                    <span class="target-heart" id="syncTargetHeart">💓</span>
+                                </div>
+                                <button class="calming-action-btn sync-tap-btn" id="syncTapBtn">Tocca qui</button>
+                                <p class="sync-feedback-label" id="syncFeedback"></p>
+                            </div>
+
+                        </div>
+
+                        <!-- Skip / Manual Controls -->
+                        <div class="calming-panel-footer">
+                            <div class="manual-slider-group hidden" id="manualSliderGroup">
+                                <div class="bpm-slider-container">
+                                    <span class="slider-label">Piano</span>
+                                    <input type="range" id="bpmSlider" min="40" max="160" value="120"
+                                        class="custom-slider" aria-label="Il suo cuore: da piano a veloce">
+                                    <span class="slider-label">Veloce</span>
+                                </div>
+                            </div>
+                            <button class="btn-skip-calm" id="skipCalmingBtn">Più tardi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <div class="h-track" id="hTrack">
+            <div class="h-spacer" aria-hidden="true"></div>
+
+            <!-- (il capitolo «Respira con me» non c'è più: gli esercizi si fanno nella cameretta, cameretta.js) -->
+
+            <!-- (il capitolo «Cosa ci succede» non c'è più: lo racconta il compagno, nella nuvoletta in home — notte.js) -->
+
+            <!-- (il capitolo «Portami con te» non c'è più: i compagni restano tra le stelle, più giù) -->
+
+            <!-- Fine del percorso -->
+            <nav class="chapter-next chapter-end" aria-label="Fine del percorso">
+                <p class="chapter-next-label"><span data-nome>Miele</span> dorme. Il suo cuore batte piano, come il tuo. Torna quando la notte è lunga.</p>
+                <div class="chapter-end-actions">
+                    <button type="button" class="btn btn-primary" data-goto="battito">Torna tra le stelle</button>
+                </div>
+            </nav>
+            </div> <!-- fine h-track -->
+            <!-- Dentro un capitolo: indietro, casa, avanti -->
+            <nav class="chapter-nav" id="chapterNav" aria-label="Schede del capitolo" hidden>
+                <button type="button" class="chapter-nav-btn" data-nav="prev" aria-label="Scheda precedente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button type="button" class="chapter-nav-btn chapter-nav-home" data-nav="home" aria-label="Torna alla home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9v10.5h4.5v-6h4v6h4.5V9"/></svg>
+                </button>
+                <span class="chapter-nav-count" aria-live="polite">1 / 1</span>
+                <button type="button" class="chapter-nav-btn" data-nav="next" aria-label="Scheda successiva">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </nav>
+            </div> <!-- fine h-sticky -->
+            </div> <!-- fine h-scroll -->
+
+            <!-- IL PASSAGGIO NELLA CAMERETTA (passaggio.js): subito dopo la notte della home. Scorrendo ci si avvicina
+                 alla finestra accesa, la si attraversa e la stanza vera (cameretta.js) si allarga intorno.
+                 In fondo alla home, ultima, la scelta dei compagni (#notteViaggio). -->
+            <section class="lk-passaggio" id="lkPassaggio" aria-labelledby="lkpTitolo" data-sipario>
+                <div class="lkp-palco">
+                    <div class="lkp-cielo" aria-hidden="true"></div>
+                    <div class="lkp-stelle lkp-stelle-lontane" aria-hidden="true"></div>
+                    <div class="lkp-alone" aria-hidden="true"></div>
+                    <div class="lkp-interno" aria-hidden="true"><div class="lkp-luce"></div></div>
+                    <div class="lkp-vetro" aria-hidden="true"></div>
+                    <div class="lkp-telaio" aria-hidden="true"><i class="lkp-croce-v"></i><i class="lkp-croce-o"></i></div>
+                    <svg class="lkp-nuvola" viewBox="0 0 200 110" aria-hidden="true"><use href="#laskaCloud"/></svg>
+                    <div class="lkp-stelle lkp-stelle-vicine" aria-hidden="true"></div>
+                    <h2 class="ob-sr" id="lkpTitolo" tabindex="-1">La cameretta di <span data-nome>Miele</span></h2>
+                    <p class="lkp-voce" data-da="0.02" data-a="0.24">«Vieni, voglio mostrarti una cosa.»<span class="lkp-chi">— <span data-nome>Miele</span></span></p>
+                    <p class="lkp-voce" data-da="0.28" data-a="0.54">«È proprio dietro quella finestra.»<span class="lkp-chi">— <span data-nome>Miele</span></span></p>
+                    <p class="lkp-voce lkp-voce-dentro" data-da="0.87" data-a="1.06">«Eccoci nel mio piccolo mondo.»<span class="lkp-chi">— <span data-nome>Miele</span></span></p>
+                    <p class="lkp-attesa" aria-live="polite" hidden></p>
+                    <div class="lkp-comandi">
+                        <p class="lkp-indizio" aria-hidden="true"><span class="lkp-icona"></span>Scorri per entrare</p>
+                        <button type="button" class="lk-btn lk-btn-secondary lk-btn-s lkp-entra">Entra nella cameretta</button>
+                    </div>
+                </div>
+            </section>
+            <!-- PRIMA DELL'ALBA (app.js): compare solo quando il compagno si è calmato, alla fine di un esercizio
+                 (fineEsercizio o un'attività della cameretta → LaskaCalm.set(60) → evento laska:calm con calm:true).
+                 L'invito e l'uscita hanno lo stesso peso. -->
+            <section class="alba" id="alba" aria-labelledby="albaInvito" hidden>
+                <p class="chapter-line">Sta arrivando l'alba.</p>
+                <p class="chapter-line"><em>«Ho sonno, adesso. È la prima volta da tanto.»</em></p>
+                <p class="chapter-line">Stanotte il suo cuore ha battuto con il tuo.</p>
+                <p class="chapter-line">Quello vero, che senti sotto la mano, può dormire accanto a te anche domani.</p>
+                <p class="chapter-line alba-invito" id="albaInvito"><strong>Vuoi portare <span data-nome>Miele</span> a casa?</strong></p>
+                <p class="chapter-num" id="albaPrezzo">34,90 € · Spedizione [DA CONFERMARE]</p>
+                <div class="chapter-end-actions" id="albaAzioni">
+                    <button type="button" class="btn btn-secondary" id="albaConosci" aria-describedby="albaPrezzo">Portami a casa</button>
+                    <button type="button" class="btn btn-secondary" id="albaResto">Per ora resto qui</button>
+                </div>
+                <p class="chapter-line" id="albaRisposta" tabindex="-1" hidden></p>
+            </section>
+
+            <!-- ================= LA NOTTE CONTINUA (notte.js) =================
+                 Scendendo dalla home il prato sale e Laska si nasconde nell'erba;
+                 poi i compagni tra le stelle. -->
+            <div class="notte-viaggio" id="notteViaggio" data-sipario>
+                <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="nvGrassHome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2b7c"/><stop offset=".45" stop-color="#1b1340"/><stop offset=".8" stop-color="#0b0818"/></linearGradient>
+                    </defs>
+                    <symbol id="nvGrass" viewBox="0 0 1440 240" preserveAspectRatio="none"><path d="M-20 205Q-18 165 -7 131Q-3 168 -5 205ZM-13 205Q-20 154 -24 112Q-5 159 5 205ZM-2 205Q-9 151 -18 106Q-3 155 8 205ZM3 205Q-6 131 -14 71Q7 138 19 205ZM11 205Q13 125 27 60Q34 132 31 205ZM23 205Q27 170 47 141Q54 173 49 205ZM37 205Q35 166 36 134Q45 170 49 205ZM46 205Q48 143 59 93Q62 149 58 205ZM53 205Q48 169 47 139Q64 172 71 205ZM62 205Q59 151 63 107Q78 156 83 205ZM76 205Q80 157 97 118Q99 162 92 205ZM87 205Q88 144 95 93Q101 149 100 205ZM97 205Q104 158 128 119Q129 162 119 205ZM108 205Q100 135 94 77Q113 141 124 205ZM118 205Q123 139 138 85Q135 145 127 205ZM124 205Q127 156 144 117Q152 161 148 205ZM140 205Q146 149 166 104Q167 154 159 205ZM154 205Q145 139 137 85Q158 145 171 205ZM166 205Q175 123 200 56Q198 130 186 205ZM177 205Q167 139 157 85Q179 145 193 205ZM187 205Q181 166 177 134Q191 170 199 205ZM195 205Q194 160 196 123Q204 164 207 205ZM204 205Q205 150 211 105Q215 155 214 205ZM212 205Q206 129 208 67Q227 136 235 205ZM225 205Q236 128 264 65Q256 135 240 205ZM233 205Q229 161 228 124Q240 165 245 205ZM240 205Q233 159 229 121Q249 163 259 205ZM252 205Q260 144 284 94Q279 150 267 205ZM262 205Q266 141 281 89Q285 147 280 205ZM271 205Q279 133 307 75Q307 140 295 205ZM288 205Q282 152 277 109Q295 157 304 205ZM299 205Q295 169 294 139Q304 172 309 205ZM304 205Q298 169 295 140Q311 173 319 205ZM311 205Q304 154 295 112Q311 159 322 205ZM319 205Q316 165 320 132Q334 168 339 205ZM331 205Q335 166 350 134Q352 169 346 205ZM343 205Q335 148 330 101Q349 153 360 205ZM351 205Q356 159 372 121Q373 163 366 205ZM358 205Q359 125 365 59Q369 132 368 205ZM363 205Q363 171 373 143Q382 174 381 205ZM378 205Q372 138 375 82Q394 144 401 205ZM391 205Q392 134 399 76Q404 140 403 205ZM400 205Q404 161 419 125Q421 165 414 205ZM411 205Q419 132 444 72Q445 139 435 205ZM428 205Q425 146 427 98Q437 152 441 205ZM434 205Q430 158 429 120Q438 162 443 205ZM441 205Q448 150 475 105Q477 155 466 205ZM461 205Q456 154 460 112Q479 159 486 205ZM474 205Q476 162 485 127Q489 166 486 205ZM483 205Q486 148 503 102Q511 153 507 205ZM500 205Q509 139 530 86Q523 145 511 205ZM508 205Q502 148 502 102Q522 153 530 205ZM524 205Q535 132 562 73Q554 139 538 205ZM532 205Q538 125 556 60Q556 132 548 205ZM540 205Q546 165 561 131Q559 168 552 205ZM549 205Q560 131 586 71Q576 138 560 205ZM556 205Q549 145 544 96Q561 150 571 205ZM563 205Q564 140 578 87Q590 146 589 205ZM583 205Q591 129 614 67Q611 136 599 205ZM592 205Q588 157 587 119Q599 162 605 205ZM600 205Q594 151 589 107Q605 156 614 205ZM611 205Q612 149 622 104Q628 154 626 205ZM622 205Q622 127 630 62Q638 134 638 205ZM632 205Q632 171 640 143Q649 174 650 205ZM642 205Q634 132 625 73Q640 139 651 205ZM647 205Q644 144 648 95Q664 150 669 205ZM661 205Q652 133 644 74Q666 140 679 205ZM673 205Q677 158 691 120Q692 163 686 205ZM681 205Q690 134 716 77Q713 141 699 205ZM692 205Q692 147 702 100Q712 152 712 205ZM706 205Q705 146 713 97Q722 151 722 205ZM719 205Q729 129 759 66Q755 136 739 205ZM730 205Q738 125 764 60Q761 133 748 205ZM739 205Q732 150 724 105Q740 155 750 205ZM745 205Q751 139 767 85Q764 145 755 205ZM753 205Q756 137 769 81Q769 143 764 205ZM759 205Q752 124 750 58Q772 131 783 205ZM777 205Q786 148 811 101Q806 153 793 205ZM789 205Q789 151 796 106Q801 156 801 205ZM796 205Q799 156 812 116Q813 161 808 205ZM801 205Q793 150 787 105Q808 155 820 205ZM812 205Q804 147 799 99Q820 152 832 205ZM827 205Q817 124 810 58Q835 131 850 205ZM840 205Q834 133 830 75Q842 140 849 205ZM844 205Q852 127 875 63Q872 134 861 205ZM853 205Q855 127 864 62Q867 134 865 205ZM861 205Q863 169 873 140Q875 172 872 205ZM868 205Q871 126 882 61Q883 133 878 205ZM875 205Q865 130 851 68Q871 136 885 205ZM883 205Q884 155 894 114Q901 160 900 205ZM896 205Q896 166 903 133Q910 169 909 205ZM903 205Q897 164 892 130Q906 168 914 205ZM909 205Q913 157 927 118Q929 161 923 205ZM917 205Q915 163 920 129Q931 167 934 205ZM925 205Q927 171 938 144Q941 174 938 205ZM933 205Q941 148 961 102Q956 154 945 205ZM939 205Q939 151 950 106Q962 156 962 205ZM956 205Q959 147 974 99Q977 152 972 205ZM968 205Q973 131 990 70Q990 138 983 205ZM978 205Q971 155 966 114Q984 159 994 205ZM986 205Q981 135 976 78Q989 142 997 205ZM991 205Q1000 130 1022 69Q1014 137 1002 205ZM999 205Q996 160 997 123Q1008 164 1012 205ZM1007 205Q1003 150 1001 105Q1013 155 1019 205ZM1016 205Q1011 145 1015 96Q1035 150 1042 205ZM1036 205Q1028 154 1021 113Q1039 159 1051 205ZM1045 205Q1039 147 1038 100Q1054 152 1062 205ZM1055 205Q1049 159 1043 121Q1056 163 1064 205ZM1061 205Q1059 171 1060 143Q1067 174 1070 205ZM1066 205Q1071 146 1089 97Q1092 151 1085 205ZM1079 205Q1076 128 1082 66Q1096 135 1100 205ZM1091 205Q1094 165 1112 132Q1121 168 1116 205ZM1108 205Q1117 131 1139 70Q1131 137 1118 205ZM1115 205Q1106 132 1102 72Q1124 138 1136 205ZM1128 205Q1135 131 1157 70Q1156 137 1146 205ZM1141 205Q1146 128 1163 65Q1167 135 1160 205ZM1154 205Q1150 170 1149 142Q1162 174 1167 205ZM1162 205Q1163 131 1171 70Q1175 137 1173 205ZM1169 205Q1169 138 1178 84Q1188 144 1189 205ZM1178 205Q1178 135 1189 78Q1201 141 1200 205ZM1192 205Q1195 169 1210 139Q1216 172 1212 205ZM1203 205Q1206 159 1218 121Q1218 163 1213 205ZM1208 205Q1208 124 1219 57Q1230 131 1230 205ZM1221 205Q1227 138 1246 83Q1246 144 1238 205ZM1232 205Q1228 168 1231 138Q1247 172 1252 205ZM1243 205Q1244 157 1257 118Q1266 161 1265 205ZM1253 205Q1256 159 1265 121Q1267 163 1263 205ZM1260 205Q1260 158 1271 119Q1281 162 1280 205ZM1273 205Q1277 166 1295 134Q1296 170 1289 205ZM1281 205Q1269 126 1260 61Q1290 133 1307 205ZM1297 205Q1296 124 1305 58Q1318 131 1320 205ZM1309 205Q1302 125 1295 60Q1312 132 1322 205ZM1318 205Q1326 146 1347 98Q1341 151 1329 205ZM1323 205Q1330 147 1355 99Q1356 152 1346 205ZM1339 205Q1339 128 1345 64Q1352 135 1352 205ZM1345 205Q1344 148 1347 101Q1353 153 1354 205ZM1350 205Q1347 155 1348 114Q1358 160 1362 205ZM1359 205Q1366 135 1385 77Q1379 141 1368 205ZM1363 205Q1372 137 1400 81Q1400 143 1388 205ZM1377 205Q1385 153 1408 110Q1404 157 1392 205ZM1387 205Q1383 151 1384 106Q1397 156 1402 205ZM1394 205Q1389 131 1385 70Q1398 137 1405 205ZM1402 205Q1402 159 1409 121Q1416 163 1416 205ZM1409 205Q1419 125 1445 59Q1438 132 1425 205ZM1420 205Q1431 127 1461 63Q1456 134 1440 205ZM1433 205Q1436 170 1451 141Q1458 173 1454 205ZM1446 205Q1442 140 1444 87Q1462 146 1468 205ZM1456 205Q1456 166 1468 134Q1480 169 1481 205ZM-20 215Q-14 174 5 141Q3 178 -6 215ZM-12 215Q-12 189 -1 167Q8 191 8 215ZM-1 215Q-3 193 -0 175Q8 195 11 215ZM9 215Q12 191 26 172Q30 193 26 215ZM22 215Q20 194 25 177Q36 196 39 215ZM31 215Q29 195 33 180Q43 197 45 215ZM39 215Q42 169 58 132Q62 173 57 215ZM50 215Q48 181 54 154Q64 184 66 215ZM59 215Q63 189 75 168Q74 192 69 215ZM64 215Q68 178 85 147Q87 181 81 215ZM73 215Q72 190 78 170Q85 193 87 215ZM81 215Q86 170 109 134Q114 175 106 215ZM93 215Q98 175 112 142Q109 179 102 215ZM99 215Q98 198 106 185Q117 200 118 215ZM113 215Q120 170 144 134Q146 174 136 215ZM126 215Q126 193 132 176Q137 195 137 215ZM133 215Q135 175 151 142Q161 178 158 215ZM151 215Q146 180 145 152Q161 183 168 215ZM163 215Q165 168 176 130Q179 172 176 215ZM170 215Q171 190 179 170Q183 192 182 215ZM178 215Q178 196 184 181Q189 198 189 215ZM185 215Q186 191 195 172Q202 193 201 215ZM192 215Q197 183 213 157Q213 186 207 215ZM202 215Q199 183 206 156Q222 186 226 215ZM215 215Q212 175 221 143Q237 179 240 215ZM226 215Q225 176 232 145Q242 180 244 215ZM236 215Q232 168 234 129Q250 172 256 215ZM245 215Q247 185 258 160Q262 187 260 215ZM253 215Q253 174 264 141Q276 178 275 215ZM265 215Q267 188 285 166Q294 191 290 215ZM278 215Q276 173 277 139Q287 177 291 215ZM288 215Q286 192 291 174Q303 194 306 215ZM299 215Q293 167 294 128Q311 172 319 215ZM311 215Q305 166 301 127Q315 171 323 215ZM316 215Q320 186 332 161Q332 188 326 215ZM324 215Q331 166 354 125Q355 170 346 215ZM336 215Q340 168 353 129Q354 172 348 215ZM342 215Q341 186 349 162Q360 189 362 215ZM353 215Q352 198 356 185Q364 200 365 215ZM360 215Q363 194 381 178Q390 196 385 215ZM373 215Q378 171 393 136Q395 175 388 215ZM382 215Q381 183 384 157Q390 186 392 215ZM390 215Q393 186 406 163Q407 189 402 215ZM396 215Q399 172 414 136Q417 176 412 215ZM403 215Q405 196 415 181Q416 198 413 215ZM408 215Q406 169 412 131Q427 173 430 215ZM420 215Q417 178 425 148Q441 181 445 215ZM438 215Q434 189 433 168Q446 192 452 215ZM448 215Q453 178 475 147Q480 181 473 215ZM459 215Q464 183 479 156Q479 186 472 215ZM469 215Q469 190 476 170Q484 192 485 215ZM479 215Q481 192 498 174Q507 195 504 215ZM497 215Q498 173 512 139Q522 177 520 215ZM510 215Q512 187 524 163Q528 189 524 215ZM517 215Q513 174 513 140Q524 177 529 215ZM522 215Q521 180 522 152Q529 183 532 215ZM530 215Q526 166 532 126Q549 170 554 215ZM542 215Q544 182 553 155Q555 185 552 215ZM548 215Q549 185 558 160Q563 187 561 215ZM557 215Q559 171 574 134Q582 175 579 215ZM568 215Q568 189 581 167Q592 191 591 215ZM581 215Q579 192 587 173Q600 194 603 215ZM593 215Q594 169 602 132Q606 173 604 215ZM599 215Q599 166 607 125Q615 170 615 215ZM608 215Q613 177 636 146Q639 180 630 215ZM619 215Q623 171 640 136Q642 175 636 215ZM632 215Q629 189 628 167Q637 191 641 215ZM637 215Q642 179 663 150Q669 183 662 215ZM652 215Q649 184 657 158Q672 187 675 215ZM669 215Q669 195 683 179Q695 197 694 215ZM685 215Q682 186 683 163Q693 189 698 215ZM692 215Q694 179 704 149Q708 182 705 215ZM699 215Q701 188 708 165Q710 190 708 215ZM704 215Q706 192 717 173Q721 194 718 215ZM713 215Q712 195 716 179Q722 197 723 215ZM719 215Q717 195 723 180Q736 197 739 215ZM733 215Q732 189 737 168Q747 192 749 215ZM746 215Q744 180 748 151Q758 183 760 215ZM754 215Q752 166 760 125Q775 170 778 215ZM766 215Q763 192 767 173Q783 194 788 215ZM783 215Q782 171 787 136Q797 175 799 215ZM795 215Q792 193 794 175Q807 195 812 215ZM806 215Q800 168 799 130Q817 173 826 215ZM819 215Q816 182 816 155Q829 185 835 215ZM828 215Q822 168 820 129Q837 172 846 215ZM839 215Q834 167 837 127Q855 171 861 215ZM850 215Q850 166 862 126Q875 171 875 215ZM862 215Q865 186 885 162Q892 188 886 215ZM878 215Q880 193 895 175Q904 195 901 215ZM890 215Q895 171 911 134Q913 175 906 215ZM899 215Q899 185 905 161Q911 188 911 215ZM906 215Q908 190 916 170Q920 193 917 215ZM914 215Q917 180 927 151Q928 183 924 215ZM919 215Q920 195 932 178Q943 196 942 215ZM934 215Q933 188 942 167Q953 191 954 215ZM947 215Q946 177 953 145Q962 180 963 215ZM957 215Q956 178 961 148Q966 181 966 215ZM962 215Q961 173 971 138Q983 177 983 215ZM973 215Q970 195 975 179Q986 197 990 215ZM983 215Q983 184 989 158Q994 187 994 215ZM988 215Q989 196 1002 180Q1010 198 1008 215ZM1002 215Q1002 197 1011 182Q1020 198 1020 215ZM1013 215Q1015 194 1032 177Q1041 196 1038 215ZM1033 215Q1028 172 1031 136Q1048 176 1054 215ZM1050 215Q1056 167 1076 128Q1076 171 1067 215ZM1058 215Q1052 168 1051 129Q1072 172 1081 215ZM1071 215Q1074 193 1090 175Q1097 195 1093 215ZM1083 215Q1083 194 1095 176Q1106 196 1106 215ZM1101 215Q1101 190 1107 169Q1114 192 1113 215ZM1108 215Q1106 192 1106 174Q1114 195 1118 215ZM1115 215Q1111 169 1112 131Q1129 173 1136 215ZM1130 215Q1132 181 1140 153Q1143 184 1141 215ZM1137 215Q1138 180 1151 152Q1162 183 1160 215ZM1155 215Q1157 166 1166 125Q1168 170 1166 215ZM1161 215Q1165 190 1183 169Q1189 192 1184 215ZM1176 215Q1175 173 1181 139Q1190 177 1191 215ZM1184 215Q1185 197 1200 182Q1208 199 1205 215ZM1195 215Q1197 166 1209 126Q1217 170 1215 215ZM1209 215Q1206 198 1209 185Q1220 200 1223 215ZM1216 215Q1216 184 1226 159Q1236 187 1235 215ZM1231 215Q1232 191 1240 171Q1244 193 1242 215ZM1236 215Q1232 187 1230 164Q1240 189 1245 215ZM1241 215Q1242 179 1250 150Q1255 182 1254 215ZM1248 215Q1244 183 1247 157Q1262 186 1267 215ZM1263 215Q1260 194 1262 176Q1272 196 1276 215ZM1272 215Q1271 173 1280 138Q1294 177 1296 215ZM1285 215Q1286 177 1292 146Q1295 181 1294 215ZM1290 215Q1294 184 1312 158Q1316 187 1310 215ZM1304 215Q1298 169 1292 131Q1308 173 1317 215ZM1313 215Q1309 191 1311 171Q1324 193 1329 215ZM1324 215Q1329 180 1342 152Q1340 183 1333 215ZM1329 215Q1329 178 1335 149Q1341 182 1341 215ZM1337 215Q1336 193 1345 175Q1358 195 1360 215ZM1350 215Q1354 169 1366 132Q1365 173 1360 215ZM1357 215Q1360 171 1371 134Q1371 175 1366 215ZM1362 215Q1360 184 1365 158Q1380 186 1384 215ZM1373 215Q1372 197 1377 183Q1384 199 1386 215ZM1382 215Q1385 171 1401 134Q1407 175 1403 215ZM1393 215Q1396 184 1410 159Q1416 187 1412 215ZM1405 215Q1410 177 1427 146Q1426 181 1418 215ZM1412 215Q1411 198 1420 184Q1434 200 1436 215ZM1425 215Q1428 167 1446 128Q1452 172 1446 215ZM1437 215Q1435 188 1443 165Q1458 190 1461 215ZM1455 215Q1457 176 1471 143Q1478 179 1475 215ZM676 230Q681 102 692 17L695 21Q685 102 681 230ZM1235 230Q1240 120 1253 47L1256 51Q1244 120 1240 230ZM821 230Q814 126 798 57L801 61Q818 126 826 230ZM897 230Q906 136 929 74L932 78Q910 136 902 230ZM208 230Q199 139 177 78L180 82Q203 139 213 230ZM1338 230Q1329 124 1309 54L1312 58Q1333 124 1343 230ZM41 230Q46 138 57 77L60 81Q50 138 46 230ZM913 230Q918 109 932 28L935 32Q922 109 918 230ZM95 230Q91 113 84 36L87 40Q95 113 100 230ZM1177 230Q1187 103 1209 19L1212 23Q1191 103 1182 230ZM95 230Q105 101 128 15L131 19Q109 101 100 230ZM1360 230Q1353 135 1336 72L1339 76Q1357 135 1365 230ZM161 230Q170 138 189 77L192 81Q174 138 166 230ZM1169 230Q1177 111 1195 32L1198 36Q1181 111 1174 230ZM0 200H1440V240H0Z"/></symbol>
+                </svg>
+                <!-- l'erba che sale davanti alla scena -->
+                <div class="nv-erba nv-erba-alta" aria-hidden="true"><svg viewBox="0 0 1440 240" preserveAspectRatio="none"><use href="#nvGrass"/></svg></div>
+
+                <!-- I compagni tra le stelle: un filo di luce unisce le stelle, e a ogni stella è appeso un peluche -->
+                <section class="nv-stelle" id="nvStelle" aria-labelledby="nvStelleTitle">
+                    <div class="nv-stelle-sticky">
+                        <div class="nv-cielo" aria-hidden="true"><span class="nv-cometa"></span></div>
+                        <div class="nv-testo">
+                            <p class="nv-kicker">Compagni di notte</p>
+                            <h2 class="nv-title" id="nvStelleTitle">Unisci le stelle.<br>Trova chi resta <em class="lk-rosa">con te</em>.</h2>
+                            <p class="nv-line">Ogni stella è un peluche con un cuore che batte piano. Scegli quello che senti tuo.</p>
+                        </div>
+                        <svg class="nv-fili" aria-hidden="true">
+                            <path class="nv-filo" data-f="0" pathLength="1"/>
+                            <path class="nv-filo" data-f="1" pathLength="1"/>
+                            <path class="nv-filo nv-filo-lieve" data-f="2" pathLength="1"/>
+                            <path class="nv-filo nv-filo-lieve" data-f="3" pathLength="1"/>
+                            <path class="nv-filo nv-filo-lieve" data-f="4" pathLength="1"/>
+                        </svg>
+                        <span class="nv-deco" data-deco="0" aria-hidden="true"></span>
+                        <span class="nv-deco" data-deco="1" aria-hidden="true"></span>
+                        <span class="nv-deco" data-deco="2" aria-hidden="true"></span>
+                        <ul class="nv-compagni" aria-label="I compagni di notte">
+                    <li class="nv-stella" data-star="0">
+                        <span class="nv-punto" aria-hidden="true"></span>
+                        <article class="nv-card clickable-product" data-product-id="1">
+                            <span class="nv-card-img"><img src="assets/compagni/orso-classico.webp" alt="Orsetto Lavanda" loading="lazy" draggable="false"></span>
+                            <h3 class="nv-card-name">Orsetto Lavanda</h3>
+                            <p class="nv-card-text">Un orsetto da stringere, con un cuore che batte piano.</p>
+                            <span class="nv-card-foot"><span class="nv-card-price">34,90 €</span><button type="button" class="nv-card-btn">Scopri</button></span>
+                        </article>
+                    </li>
+                    <li class="nv-stella" data-star="1">
+                        <span class="nv-punto" aria-hidden="true"></span>
+                        <article class="nv-card clickable-product" data-product-id="2">
+                            <span class="nv-card-img"><img src="assets/compagni/peluche-classico.webp" alt="Coniglio Calmo" loading="lazy" draggable="false"></span>
+                            <h3 class="nv-card-name">Coniglio Calmo</h3>
+                            <p class="nv-card-text">Un battito lento da stringere.</p>
+                            <span class="nv-card-foot"><span class="nv-card-price">34,90 €</span><button type="button" class="nv-card-btn">Scopri</button></span>
+                        </article>
+                    </li>
+                    <li class="nv-stella" data-star="2">
+                        <span class="nv-punto" aria-hidden="true"></span>
+                        <article class="nv-card clickable-product" data-product-id="3">
+                            <span class="nv-card-img"><img src="assets/compagni/koala-grigio.webp" alt="Koala Rilassante" loading="lazy" draggable="false"></span>
+                            <h3 class="nv-card-name">Koala Rilassante</h3>
+                            <p class="nv-card-text">Un abbraccio lungo, per addormentarsi.</p>
+                            <span class="nv-card-foot"><span class="nv-card-price">39,90 €</span><button type="button" class="nv-card-btn">Scopri</button></span>
+                        </article>
+                    </li>
+                        </ul>
+                        <div class="nv-passi" aria-hidden="true"><i></i><i></i><i></i></div>
+                    </div>
+                </section>
+            </div>
+
+        </div> <!-- Fine home-view -->
+
+        <!-- Vista Informazioni -->
+        <!-- ================= IL RIFUGIO (fuori dal percorso) ================= -->
+        <div id="rifugio-view" class="page-view" data-place="rifugio">
+            <header class="rifugio-intro" aria-labelledby="rifugioTitle">
+                <div class="chapter-intro-sky" aria-hidden="true"></div>
+                <div class="chapter-intro-inner">
+                    <p class="chapter-num">Fuori dal percorso</p>
+                <h1 class="chapter-title" id="rifugioTitle">Il <em class="lk-rosa">Rifugio</em></h1>
+                <p class="chapter-line">Un posto dove restare, quando vuoi. Senza fretta.</p>
+                </div>
+            </header>
+            <section class="rifugio-places" aria-label="Luoghi del Rifugio">
+                <button type="button" class="rifugio-card" id="rifugioCamerettaBtn">
+                    <span class="rifugio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18M3 21v-3M21 21v-3"/><path d="M6 10V7.5a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5V10"/></svg></span>
+                    <span class="rifugio-card-title">La sua cameretta</span>
+                    <span class="rifugio-card-sub">Gli esercizi, fatti insieme al tuo compagno, nella sua stanza.</span>
+                </button>
+                <button type="button" class="rifugio-card" id="rifugioRoomBtn">
+                    <span class="rifugio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-5h6v5"/></svg></span>
+                    <span class="rifugio-card-title">La stanza</span>
+                    <span class="rifugio-card-sub">Pioggia, onde, aurora, montagna: scegli dove stare.</span>
+                </button>
+                <button type="button" class="rifugio-card" id="rifugioSoundBtn">
+                    <span class="rifugio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h2l2-6 3 12 3-9 2 5 2-2h4"/></svg></span>
+                    <span class="rifugio-card-title">Suoni della notte</span>
+                    <span class="rifugio-card-sub">Foresta, oceano, pioggia, campane tibetane.</span>
+                </button>
+                <button type="button" class="rifugio-card" id="rifugioPlaylistBtn">
+                    <span class="rifugio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>
+                    <span class="rifugio-card-title">Le playlist</span>
+                    <span class="rifugio-card-sub">La musica che aiuta altre persone, e la tua.</span>
+                </button>
+            </section>
+            <!-- SECTION 2.7 — SPOTIFY COMMUNITY PLAYLISTS -->
+            <section class="spotify-exchange-section"
+                style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--panel-border);">
+                <div class="section-header">
+                    <h2 class="section-title">Le playlist della <em class="lk-rosa">notte</em></h2>
+                </div>
+
+                <div class="spotify-exchange-container">
+                    <!-- Form per inserire una playlist -->
+                    <div class="spotify-form-card">
+                        <h3>Condividi una Playlist</h3>
+                        <p>Incolla il link di una playlist che ti aiuta.</p>
+                        <form id="spotifyShareForm" class="spotify-share-form">
+                            <div class="form-group" style="margin-bottom: 1.2rem;">
+                                <label for="playlistTitle"
+                                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">Titolo
+                                    della Playlist</label>
+                                <input type="text" id="playlistTitle" placeholder="Es. Melodie per Box Breathing"
+                                    required
+                                    style="width: 100%; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255, 255, 255, 0.05); color: var(--text-color); font-family: inherit;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1.2rem;">
+                                <label for="playlistUrl"
+                                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">Link
+                                    Spotify</label>
+                                <input type="url" id="playlistUrl"
+                                    placeholder="Es. https://open.spotify.com/playlist/..." required
+                                    style="width: 100%; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255, 255, 255, 0.05); color: var(--text-color); font-family: inherit;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label for="playlistGenre"
+                                    style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">Genere
+                                    Musicale</label>
+                                <select id="playlistGenre"
+                                    style="width: 100%; padding: 0.8rem; border-radius: 12px; border: 1px solid var(--panel-border); background: rgba(255, 255, 255, 0.05); color: var(--text-color); font-family: inherit; cursor: pointer;">
+                                    <option value="Ambient"
+                                        style="background: var(--bg-color); color: var(--text-color);">Ambient / Synth
+                                    </option>
+                                    <option value="Nature"
+                                        style="background: var(--bg-color); color: var(--text-color);">Suoni della
+                                        Natura</option>
+                                    <option value="Lo-Fi"
+                                        style="background: var(--bg-color); color: var(--text-color);">Lo-Fi Chill
+                                    </option>
+                                    <option value="Classical"
+                                        style="background: var(--bg-color); color: var(--text-color);">Classica
+                                        Rilassante</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Condividi con la community</button>
+                        </form>
+                    </div>
+
+                    <!-- Griglia di playlist condivise -->
+                    <div class="spotify-list-container">
+                        <h3>Playlist Condivise</h3>
+                        <div class="spotify-playlists-grid" id="spotifyPlaylistsGrid">
+                            <!-- Playlist predefinite -->
+                            <div class="playlist-card">
+                                <div class="playlist-icon">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="color: #1DB954;">
+                                        <path d="M9 18V5l12-2v13" />
+                                        <circle cx="6" cy="18" r="3" />
+                                        <circle cx="18" cy="16" r="3" />
+                                    </svg>
+                                </div>
+                                <div class="playlist-details">
+                                    <h4>Deep Ambient Relief</h4>
+                                    <span class="playlist-genre">Ambient</span>
+                                    <p>Synth caldi e campane tibetane.</p>
+                                </div>
+                                <a href="https://open.spotify.com/playlist/37i9dQZF1DWWY4n5G5T323" target="_blank"
+                                    class="playlist-play-btn" aria-label="Ascolta su Spotify">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div class="playlist-card">
+                                <div class="playlist-icon">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="color: #1DB954;">
+                                        <path d="M9 18V5l12-2v13" />
+                                        <circle cx="6" cy="18" r="3" />
+                                        <circle cx="18" cy="16" r="3" />
+                                    </svg>
+                                </div>
+                                <div class="playlist-details">
+                                    <h4>Lo-Fi Anxiety Chill</h4>
+                                    <span class="playlist-genre">Lo-Fi</span>
+                                    <p>Battiti lenti e morbidi.</p>
+                                </div>
+                                <a href="https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0EXPn" target="_blank"
+                                    class="playlist-play-btn" aria-label="Ascolta su Spotify">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div class="playlist-card">
+                                <div class="playlist-icon">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="color: #1DB954;">
+                                        <path d="M9 18V5l12-2v13" />
+                                        <circle cx="6" cy="18" r="3" />
+                                        <circle cx="18" cy="16" r="3" />
+                                    </svg>
+                                </div>
+                                <div class="playlist-details">
+                                    <h4>Nature & Forest Rain</h4>
+                                    <span class="playlist-genre">Nature</span>
+                                    <p>Pioggia, vento e foresta.</p>
+                                </div>
+                                <a href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" target="_blank"
+                                    class="playlist-play-btn" aria-label="Ascolta su Spotify">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <nav class="chapter-next chapter-end" aria-label="Torna al percorso">
+                <p class="chapter-next-label">Quando vuoi, il percorso è qui.</p>
+                <div class="chapter-end-actions">
+                    <button type="button" class="btn btn-secondary" data-goto="battito">Torna al battito</button>
+                </div>
+            </nav>
+        </div> <!-- Fine rifugio-view -->
+
+        <!-- Vista Quiz -->
+        <div id="quiz-view" class="page-view">
+            <section class="quiz-section">
+                <div class="section-header">
+                    <h2 class="section-title">Capiamo <em class="lk-rosa">cosa senti</em></h2>
+                </div>
+
+                <div class="quiz-container card-prevention">
+                    <!-- Schermata Iniziale del Quiz -->
+                    <div id="quiz-intro" class="quiz-step-panel">
+                        <div class="quiz-intro-icon">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round"
+                                style="width: 48px; height: 48px; color: var(--accent-color);">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            </svg>
+                        </div>
+                        <h3>Ti faccio cinque domande, va bene?</h3>
+                        <p>Ti dico se somiglia più ad ansia o a panico, e cosa può aiutarti.</p>
+                        <button class="btn btn-primary btn-large" id="startQuizBtn" style="margin-top: 1.5rem;">Cominciamo</button>
+                    </div>
+
+                    <!-- Schermate delle Domande (Dinamiche) -->
+                    <div id="quiz-question-wrapper" class="quiz-step-panel" style="display: none;">
+                        <div class="quiz-progress-bar-wrapper">
+                            <div class="quiz-progress-bar" id="quizProgressBar"></div>
+                        </div>
+                        <div class="quiz-step-info" id="quizStepInfo">Domanda 1 di 5</div>
+                        <h3 class="quiz-question-text" id="quizQuestionText">Testo della domanda</h3>
+
+                        <div class="quiz-options-list">
+                            <button class="quiz-option-btn" id="optionABtn">
+                                <span class="option-letter">A</span>
+                                <span class="option-text" id="optionAText">Opzione A</span>
+                            </button>
+                            <button class="quiz-option-btn" id="optionBBtn">
+                                <span class="option-letter">B</span>
+                                <span class="option-text" id="optionBText">Opzione B</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Schermata del Risultato -->
+                    <div id="quiz-result" class="quiz-step-panel" style="display: none;">
+                        <div class="quiz-result-header">
+                            <div class="quiz-result-badge" id="quizResultBadge">Risultato</div>
+                            <h3 id="quizResultTitle">Attacco di Panico</h3>
+                        </div>
+                        <p class="quiz-result-desc" id="quizResultDesc">
+                            Descrizione del risultato.
+                        </p>
+                        <p class="quiz-result-note">Questo test serve a orientarti, non è una diagnosi. Se queste sensazioni tornano spesso, parlane con il tuo medico o con uno psicologo.</p>
+
+                        <div class="quiz-result-advice card-prevention"
+                            style="margin-top: 1.8rem; padding: 1.5rem; text-align: left; background: rgba(250, 248, 255, 0.02); width: 100%;">
+                            <h4 style="color: var(--color-white); font-size: 1.05rem; font-weight: 700;">💡 Esercizi
+                                consigliati da provare subito:</h4>
+                            <ul class="prevention-list" id="quizResultAdviceList"
+                                style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Riempito dinamico -->
+                            </ul>
+                        </div>
+
+                        <div class="quiz-result-actions"
+                            style="margin-top: 2.5rem; display: flex; gap: 1.2rem; width: 100%;">
+                            <button class="btn btn-secondary flex-1" id="restartQuizBtn">Ripeti il Test</button>
+                            <button class="btn btn-primary flex-1" id="goToExercisesBtn">Vai agli Esercizi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista Esercizio Singolo (Focus Mode) -->
+        <div id="exercise-view" class="page-view">
+            <section class="exercise-focus-section">
+                <!-- Header del Focus Mode -->
+                <div class="exercise-focus-header">
+                    <button class="back-to-home-btn" id="backToExercisesBtn">
+                        <span class="back-arrow">←</span> Torna agli esercizi
+                    </button>
+                </div>
+
+                <div class="exercise-focus-container">
+
+                    <!-- Pannello Esercizio 1: Ascolta il battito -->
+                    <div class="exercise-focus-panel" id="focus-panel-1">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">Il battito lento</h2>
+                            <p class="focus-desc">Segui il ritmo del cuore pulsante. Sincronizza il tuo respiro con la
+                                sua pulsazione lenta e naturale.</p>
+                        </div>
+                        <div class="exercise-visual visual-rhythm">
+                            <!-- Modello 3D heart_in_love.glb al posto dei cerchi di respirazione -->
+                            <div class="breathing-heart-3d-container">
+                                <!-- Cuore di riserva: visibile finché il modello 3D (heart_in_love.glb) non è disponibile -->
+                                <img src="assets/Cuore rosa.png" alt="" class="rhythm-heart-fallback" id="rhythmHeartFallback" aria-hidden="true">
+                                <model-viewer id="rhythmHeartViewer" src="heart_in_love.glb" scale="0.6 0.6 0.6"
+                                    alt="Modello 3D di un cuore per respirazione" auto-rotate auto-rotate-delay="0"
+                                    rotation-per-second="10deg" camera-controls interaction-prompt="none"
+                                    shadow-intensity="0" shadow-softness="0.8" environment-image="neutral"
+                                    exposure="1.0" disable-zoom aria-label="Modello 3D del cuore respirante">
+                                </model-viewer>
+                            </div>
+                            <span class="breathing-guide-text" id="rhythmText">Inspira...</span>
+                        </div>
+                    </div>
+
+                    <!-- Pannello Esercizio 2: Torna al presente (Grounding) -->
+                    <div class="exercise-focus-panel" id="focus-panel-2">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">Cinque cose vere</h2>
+                            <p class="focus-desc">Un esercizio interattivo di radicamento. Concentrati su ciò che ti
+                                circonda passo dopo passo.</p>
+                        </div>
+                        <div class="exercise-visual visual-grounding" id="groundingContainer">
+                            <div class="grounding-step-active" id="groundingStepContent">
+                                <div class="grounding-icon-wrapper" id="groundingIcon">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="width: 24px; height: 24px;">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </div>
+                                <h4 id="groundingStepInstruction">Nomina 5 cose che puoi VEDERE</h4>
+
+                                <div class="grounding-tags" id="groundingTags">
+                                    <!-- I tag inseriti appariranno qui -->
+                                </div>
+
+                                <div class="grounding-input-group">
+                                    <input type="text" id="groundingInput"
+                                        placeholder="Digita qualcosa e premi Invio..." autocomplete="off">
+                                    <button class="btn btn-secondary btn-small" id="groundingAddBtn">Aggiungi</button>
+                                </div>
+
+                                <div class="grounding-progress">
+                                    Elementi: <span id="groundingCurrentCount">0</span> di <span
+                                        id="groundingTargetCount">5</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="groundingNextBtn"
+                                style="display: none; align-self: center;">Ricomincia</button>
+                        </div>
+                    </div>
+
+                    <!-- Pannello Esercizio 3: Respirazione quadrata -->
+                    <div class="exercise-focus-panel" id="focus-panel-3">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">Il quadrato di luce</h2>
+                            <p class="focus-desc">Un ciclo di quattro fasi per stabilizzare il sistema nervoso. Segui la
+                                linea luminosa.</p>
+                        </div>
+                        <div class="exercise-visual visual-box">
+                            <div class="box-breathing-container">
+                                <svg class="box-svg" viewBox="0 0 120 120">
+                                    <!-- Sfondo del quadrato -->
+                                    <rect class="box-bg-rect" x="10" y="10" width="100" height="100" rx="12"></rect>
+                                    <!-- Linea attiva animata -->
+                                    <rect class="box-anim-rect" id="boxLine" x="10" y="10" width="100" height="100"
+                                        rx="12"></rect>
+                                </svg>
+                                <div class="box-phase-label" id="boxPhaseText">Pronto</div>
+                                <div class="box-timer" id="boxTimer">4s</div>
+                            </div>
+                            <button class="btn btn-primary" id="boxBreathingBtn">Cominciamo</button>
+                        </div>
+                    </div>
+
+                    <!-- Pannello Esercizio 4: Rilassa i muscoli -->
+                    <div class="exercise-focus-panel" id="focus-panel-4">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">Stringi e lascia andare</h2>
+                            <p class="focus-desc">Alterna tensione e rilassamento per rilasciare lo stress fisico
+                                accumulato nel corpo.</p>
+                        </div>
+                        <div class="exercise-visual visual-relaxation" id="relaxationVisualContainer">
+                            <div class="hand-svg-wrapper">
+                                <!-- SVG Mano minimalista con entrambi gli stati in sovrapposizione per cross-fade -->
+                                <svg class="hand-svg" viewBox="0 0 100 100">
+                                    <g class="hand-glow-layer" id="handGlow"></g>
+                                    <!-- Stato Mano Aperta (Rilassata) -->
+                                    <g class="hand-state-open" id="handOpenState">
+                                        <path
+                                            d="M50,75 C45,75 35,70 35,55 L35,45 C35,43 36,42 38,42 C40,42 41,43 41,45 L41,30 C41,28 42,27 44,27 C46,27 47,28 47,30 L47,22 C47,20 48,19 50,19 C52,19 53,20 53,22 L53,28 C53,26 54,25 56,25 C58,25 59,26 59,28 L59,35 C59,34 60,33 62,33 C64,33 65,34 65,36 L65,55 C65,70 55,75 50,75 Z"
+                                            class="hand-path" />
+                                        <!-- Pollice aperto -->
+                                        <path d="M36,58 C33,57 28,52 25,48 C24,47 25,45 27,45 C29,45 32,48 35,52"
+                                            class="hand-path" />
+                                    </g>
+                                    <!-- Stato Pugno Chiuso (Teso) -->
+                                    <g class="hand-state-fist" id="handFistState">
+                                        <!-- Palmo chiuso -->
+                                        <path
+                                            d="M50,75 C45,75 35,70 35,55 L35,48 C35,46 36,45 38,45 C40,45 41,46 41,48 L41,42 C41,40 42,39 44,39 C46,39 47,40 47,42 L47,39 C47,37 48,36 50,36 C52,36 53,37 53,39 L53,42 C53,40 54,39 56,39 C58,39 59,40 59,42 L59,45 C59,44 60,43 62,43 C64,43 65,44 65,46 L65,55 C65,70 55,75 50,75 Z"
+                                            class="hand-path" />
+                                        <!-- Dita piegate che stringono -->
+                                        <path d="M38,45 C38,50 43,52 45,52" class="hand-path" />
+                                        <path d="M44,42 C44,48 49,50 51,50" class="hand-path" />
+                                        <path d="M50,42 C50,48 55,50 57,50" class="hand-path" />
+                                        <path d="M56,42 C56,48 61,50 63,50" class="hand-path" />
+                                        <!-- Pollice che chiude sopra le dita -->
+                                        <path d="M32,56 C35,54 42,50 46,50 C48,50 49,52 47,54 C45,56 38,62 35,62"
+                                            class="hand-path thumb-fist" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <span class="relaxation-text" id="relaxationText">Pronto</span>
+                        </div>
+                        <div class="relaxation-actions" style="margin-top: 1rem; display: flex; justify-content: center;">
+                            <button class="btn btn-primary" id="relaxationBtn">Cominciamo</button>
+                        </div>
+                    </div>
+
+                    <!-- Pannello Esercizio 5: Suoni per rilassarsi -->
+                    <div class="exercise-focus-panel" id="focus-panel-5">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">I suoni della notte</h2>
+                            <p class="focus-desc">Ascolta paesaggi sonori e frequenze lente, sintetizzate per aiutarti a rilassarti.</p>
+                        </div>
+                        <div class="exercise-visual visual-sound">
+                            <div class="sound-controls-wrapper">
+                                <label for="soundSelect" class="sound-label">Scegli il suono:</label>
+                                <select id="soundSelect" class="sound-select">
+                                    <option value="ocean">Onde dell'Oceano</option>
+                                    <option value="rain">Pioggia Rilassante</option>
+                                    <option value="binaural">Frequenza Theta (6Hz)</option>
+                                    <option value="bowl">Campana Tibetana</option>
+                                </select>
+
+                                <!-- Visualizzatore di onde sonore animato (CSS) -->
+                                <div class="sound-wave-visualizer" id="soundVisualizer">
+                                    <span class="bar bar-1"></span>
+                                    <span class="bar bar-2"></span>
+                                    <span class="bar bar-3"></span>
+                                    <span class="bar bar-4"></span>
+                                    <span class="bar bar-5"></span>
+                                </div>
+                            </div>
+                            <div class="sound-actions">
+                                <button class="btn btn-primary" id="soundPlayBtn">Ascolta</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pannello Esercizio 6: Respiro profondo -->
+                    <div class="exercise-focus-panel" id="focus-panel-6">
+                        <div class="focus-panel-info">
+                            <h2 class="focus-title">Il respiro lungo</h2>
+                            <p class="focus-desc">Riduci lo stress con la respirazione diaframmatica (5-2-5). Segui il
+                                cerchio luminoso.</p>
+                        </div>
+                        <div class="exercise-visual visual-deep-breath" id="deepBreathContainer">
+                            <div class="deep-breath-circle-wrapper">
+                                <div class="deep-breath-circle" id="deepBreathCircle"></div>
+                            </div>
+                            <div class="deep-breath-phase" id="deepBreathPhase">Pronto</div>
+                            <div class="deep-breath-timer" id="deepBreathTimer">5s</div>
+                        </div>
+                        <div class="deep-breath-actions" style="margin-top: 1rem; display: flex; justify-content: center;">
+                            <button class="btn btn-primary" id="deepBreathBtn">Cominciamo</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Fine dell'esercizio (copione, Atto II): parla il compagno; la domanda è facoltativa (app.js) -->
+                <div class="esercizio-fine" id="esercizioFine" hidden>
+                    <p class="focus-desc" id="esercizioGrazie" aria-live="polite"></p>
+                    <p class="focus-desc" id="esercizioDomanda">Quanto sei agitato adesso?</p>
+                    <div class="ob-suggestions" role="radiogroup" aria-labelledby="esercizioDomanda">
+                        <button type="button" role="radio" aria-checked="false">1</button>
+                        <button type="button" role="radio" aria-checked="false" tabindex="-1">2</button>
+                        <button type="button" role="radio" aria-checked="false" tabindex="-1">3</button>
+                        <button type="button" role="radio" aria-checked="false" tabindex="-1">4</button>
+                        <button type="button" role="radio" aria-checked="false" tabindex="-1">5</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista Dettaglio Prodotto (Personalizzazione) -->
+        <div id="product-detail-view" class="page-view">
+            <section class="product-detail-section">
+                <!-- Bottone Indietro -->
+                <div class="product-detail-header">
+                    <button class="back-to-home-btn" id="backToPlushBtn">
+                        <span class="back-arrow">←</span> Torna ai compagni
+                    </button>
+                </div>
+
+                <div class="product-detail-container">
+                    <!-- Colonna Sinistra: Anteprima Immagine Dinamica -->
+                    <div class="detail-visual-column">
+                        <div class="detail-img-container">
+                            <img src="assets/plush_lavender.png" alt="Anteprima Peluche" id="detailProductImg" class="interactive-plush">
+                            <!-- anteprima del ricamo: il cartellino cucito con il nome, nel colore del filo scelto -->
+                            <span class="pers-anteprima" id="persAnteprima" aria-hidden="true" hidden>
+                                <span class="pers-anteprima-nome" id="persAnteprimaNome"></span>
+                                <small class="pers-anteprima-dove" id="persAnteprimaDove">sul cartellino del cuore</small>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Colonna Destra: Configurazione e Info -->
+                    <div class="detail-info-column">
+                        <div class="detail-badge">Per le notti inquiete</div>
+                        <h2 class="detail-title" id="detailProductName">Orsetto Lavanda</h2>
+                        <div class="detail-price" id="detailProductPrice">34,90 €</div>
+                        <p class="detail-desc" id="detailProductDesc">Descrizione del peluche...</p>
+                        <p class="detail-tuo" id="detailTuo" hidden></p>
+
+                        <!-- il colore del peluche: gli stessi della scelta del compagno (onboarding.js); quello del tuo è già scelto -->
+                        <div class="pers-campo detail-colori" id="detailColori">
+                            <span class="pers-etichetta" id="detailColoriEt">Il colore <span class="pers-facoltativo" id="detailColoreNome"></span></span>
+                            <div class="pers-fili" role="radiogroup" aria-labelledby="detailColoriEt" id="detailColoriLista"></div>
+                        </div>
+
+                        <!-- Rendilo tuo: chiuso, con una riga che dice cosa è già scelto (app.js). Dentro: il nome ricamato,
+                             il colore del filo, dove cucirlo, un bigliettino. Tutto facoltativo; il costo del ricamo non è ancora deciso. -->
+                        <details class="pers-apri" id="persApri">
+                            <summary><span class="pers-titolo">Rendilo tuo</span> <span class="pers-riassunto" id="persRiassunto">Un nome ricamato, un bigliettino · facoltativo</span></summary>
+                        <fieldset class="pers" id="persBlocco">
+                            <legend class="ob-sr">Rendilo tuo</legend>
+                            <p class="pers-nota">Tutto facoltativo. Il ricamo si cuce a mano, prima della partenza. Costo: <span class="cassa-dc">[DA CONFERMARE]</span>.</p>
+
+                            <div class="pers-campo">
+                                <label class="pers-etichetta" for="persNome">Il nome da ricamare</label>
+                                <div class="pers-nome-riga">
+                                    <input type="text" id="persNome" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Il suo nome" aria-describedby="persNomeAiuto">
+                                    <span class="pers-conta" id="persNomeConta" aria-hidden="true">0/12</span>
+                                </div>
+                                <p class="pers-aiuto" id="persNomeAiuto">Fino a 12 lettere. Se lo lasci vuoto, niente ricamo.</p>
+                            </div>
+
+                            <div class="pers-campo">
+                                <span class="pers-etichetta" id="persFiloEt">Il colore del filo</span>
+                                <div class="pers-fili" role="radiogroup" aria-labelledby="persFiloEt">
+                                    <button type="button" role="radio" class="pers-filo" data-filo="lilla" style="--filo:#C3A2FF" aria-checked="true">Lilla</button>
+                                    <button type="button" role="radio" class="pers-filo" data-filo="luna" style="--filo:#F4EEFF" aria-checked="false" tabindex="-1">Bianco luna</button>
+                                    <button type="button" role="radio" class="pers-filo" data-filo="oro" style="--filo:#E8C77A" aria-checked="false" tabindex="-1">Oro</button>
+                                    <button type="button" role="radio" class="pers-filo" data-filo="rosa" style="--filo:#F3A6CF" aria-checked="false" tabindex="-1">Rosa</button>
+                                </div>
+                            </div>
+
+                            <div class="pers-campo">
+                                <span class="pers-etichetta" id="persDoveEt">Dove ricamarlo</span>
+                                <div class="pers-dove" role="radiogroup" aria-labelledby="persDoveEt">
+                                    <button type="button" role="radio" class="pers-scelta" data-dove="cuore" aria-checked="true">Sul cartellino del cuore</button>
+                                    <button type="button" role="radio" class="pers-scelta" data-dove="zampina" aria-checked="false" tabindex="-1">Sulla zampina</button>
+                                </div>
+                            </div>
+
+                            <div class="pers-campo">
+                                <label class="pers-etichetta" for="persBiglietto">Un bigliettino nella scatola <span class="pers-facoltativo">(facoltativo)</span></label>
+                                <textarea id="persBiglietto" maxlength="140" rows="2" placeholder="Due righe da trovare aprendo la scatola…" aria-describedby="persBigliettoConta"></textarea>
+                                <span class="pers-conta pers-conta-sotto" id="persBigliettoConta">0/140</span>
+                            </div>
+
+                            <label class="pers-regalo"><input type="checkbox" id="persRegalo"> È un regalo: nella scatola niente prezzo</label>
+                            <p class="pers-aiuto">Nel peluche vero ci sono il colore e il nome ricamato. Il colore del cuore e gli oggetti scelti all'inizio, per ora, vivono solo qui nel sito: <span class="cassa-dc">[DA CONFERMARE]</span>.</p>
+                        </fieldset>
+                        </details>
+
+                        <!-- un compagno alla volta: quanti se ne vogliono si cambia nel carrello (i controlli restano qui per app.js) -->
+                        <div class="quantity-input-group" hidden>
+                            <button class="qty-btn" id="qtyMinusBtn" type="button" aria-label="Uno in meno">-</button>
+                            <input type="number" id="detailQty" value="1" min="1" max="10" readonly aria-label="Quanti">
+                            <button class="qty-btn" id="qtyPlusBtn" type="button" aria-label="Uno in più">+</button>
+                        </div>
+
+                        <!-- una sola azione, con il prezzo dentro; sotto, una riga che rassicura -->
+                        <button class="btn btn-primary btn-large btn-block" id="addToCartBtn" type="button">
+                            <span>Aggiungi al carrello</span> <span class="detail-cta-prezzo" id="detailTotalPrice">34,90 €</span>
+                        </button>
+                        <p class="acquisto-sicuro"><span id="detailParziale">Spedizione da definire.</span> Paghi sulla pagina sicura di Stripe o PayPal.</p>
+                        <!-- cosa si compra davvero: i dati del prodotto non sono ancora decisi, e restano segnati (chiuso: si apre se serve) -->
+                        <details class="detail-info">
+                            <summary>Cosa porti a casa</summary>
+                            <dl>
+                                <div><dt>Colori disponibili</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                                <div><dt>Misure e peso</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                                <div><dt>Materiali</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                                <div><dt>Il cuore che batte</dt><dd>Come funziona, come si accende e si spegne, batteria e durata: <span class="cassa-dc">[DA CONFERMARE]</span></dd></div>
+                                <div><dt>Lavaggio e cura</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                                <div><dt>Nella scatola</dt><dd>Il peluche, e il bigliettino se l'hai scritto. Il resto: <span class="cassa-dc">[DA CONFERMARE]</span></dd></div>
+                                <div><dt>Età consigliata e sicurezza</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                                <div><dt>Spedizione e resi</dt><dd class="cassa-dc">[DA CONFERMARE]</dd></div>
+                            </dl>
+                            <p class="pers-aiuto">È un peluche per il conforto, non un dispositivo medico: non sostituisce il parere di un medico o di uno psicologo.</p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================================================================
+             LA CASSA — CHECKOUT SIMULATO, SOLO DIMOSTRAZIONE.
+             Nessun pagamento vero passa da qui: i dati della carta non vengono né salvati
+             né inviati, e il modulo si svuota subito dopo la conferma (app.js).
+             Il pagamento avviene sulla pagina del fornitore (in produzione: Stripe Checkout, oppure PayPal):
+             il sito NON raccoglie mai numero di carta e CVV in un form proprio (PCI-DSS).
+             ================================================================== -->
+        <div id="checkout-view" class="page-view">
+            <section class="cassa" aria-labelledby="cassaTitolo">
+                <div class="cassa-testa">
+                    <button class="back-to-home-btn" id="cassaIndietro" type="button"><span class="back-arrow">←</span> Torna indietro</button>
+                    <p class="chapter-num">La partenza</p>
+                    <h1 class="cassa-titolo" id="cassaTitolo">Prepariamo <span data-nome class="lk-rosa">Miele</span> per il viaggio</h1>
+                    <p class="cassa-sotto">Due passi, con calma.</p>
+                </div>
+
+                <div class="cassa-griglia">
+                    <form id="checkoutForm" class="checkout-form cassa-form" novalidate>
+                        <fieldset class="cassa-passo">
+                            <legend><span class="cassa-num" aria-hidden="true">1</span> <span>Dove dormirà <span data-nome>Miele</span></span></legend>
+                            <div class="form-row cassa-nomi">
+                                <div class="form-group flex-1">
+                                    <label for="cassaNome">Nome</label>
+                                    <input type="text" id="cassaNome" name="given-name" autocomplete="given-name" required data-msg="Ci serve il tuo nome.">
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="cassaCognome">Cognome</label>
+                                    <input type="text" id="cassaCognome" name="family-name" autocomplete="family-name" required data-msg="Ci serve il tuo cognome.">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label for="cassaEmail">Email</label>
+                                    <input type="email" id="cassaEmail" name="email" autocomplete="email" inputmode="email" required data-msg="L'email sembra incompleta.">
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="cassaTelefono">Telefono <span class="pers-facoltativo">(facoltativo)</span></label>
+                                    <input type="tel" id="cassaTelefono" name="tel" autocomplete="tel" inputmode="tel">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cassaIndirizzo">Indirizzo</label>
+                                <input type="text" id="cassaIndirizzo" name="address-line1" autocomplete="address-line1" required placeholder="Via, numero civico" data-msg="Ci serve l'indirizzo, con il numero civico.">
+                            </div>
+                            <div class="form-row cassa-dove">
+                                <div class="form-group cassa-cap">
+                                    <label for="cassaCap">CAP</label>
+                                    <input type="text" id="cassaCap" name="postal-code" autocomplete="postal-code" inputmode="numeric" maxlength="5" required pattern="[0-9]{5}" data-msg="Il CAP ha 5 cifre.">
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="cassaCitta">Città</label>
+                                    <input type="text" id="cassaCitta" name="address-level2" autocomplete="address-level2" required data-msg="Ci serve la città.">
+                                </div>
+                                <div class="form-group cassa-prov">
+                                    <label for="cassaProvincia">Provincia</label>
+                                    <input type="text" id="cassaProvincia" name="address-level1" autocomplete="address-level1" maxlength="2" required pattern="[A-Za-z]{2}" placeholder="RM" data-msg="La sigla della provincia ha due lettere.">
+                                </div>
+                            </div>
+                            <!-- c'è un solo modo di spedire e un solo paese: niente da scegliere, solo da sapere -->
+                            <p class="pers-aiuto cassa-spedizione">Spedizione standard in Italia. Tempi, costo e spedizioni all'estero: <span class="cassa-dc">[DA CONFERMARE]</span>.</p>
+                        </fieldset>
+
+                        <fieldset class="cassa-passo">
+                            <legend><span class="cassa-num" aria-hidden="true">2</span> Pagamento</legend>
+                            <div class="cassa-metodi" role="radiogroup" aria-label="Come vuoi pagare">
+                                <label class="cassa-metodo"><input type="radio" name="metodo" value="carta" checked> <span>Carta, Apple Pay o Google Pay</span></label>
+                                <label class="cassa-metodo"><input type="radio" name="metodo" value="paypal"> <span>PayPal</span></label>
+                            </div>
+                            <!-- I dati della carta non passano mai da qui: si scrivono solo sulla pagina sicura del fornitore
+                                 (in produzione: Stripe Checkout, o il pulsante di PayPal) -->
+                            <p class="cassa-paypal" id="cassaSicuro" aria-live="polite">Alla conferma ti portiamo sulla pagina sicura di <strong id="cassaFornitore">Stripe</strong>: i dati della carta li scrivi solo lì, Laska non li vede e non li conserva.</p>
+                            <p class="checkout-demo-note" role="note">Questa è una versione di prova: il pagamento è simulato. Nessun addebito, nessun dato inviato.</p>
+
+                            <label class="cassa-check"><input type="checkbox" id="cassaStessoIndirizzo" checked> <span class="cassa-check-testo">L'indirizzo di fatturazione è lo stesso della spedizione</span></label>
+                            <div class="form-group" id="cassaFatturaBox" hidden>
+                                <label for="cassaFattura">Indirizzo di fatturazione</label>
+                                <input type="text" id="cassaFattura" name="billing-address" autocomplete="billing street-address" data-msg="Ci serve l'indirizzo di fatturazione.">
+                            </div>
+                        </fieldset>
+
+                        <label class="cassa-check cassa-consenso"><input type="checkbox" id="cassaConsenso" required data-msg="Per continuare serve il tuo ok alle condizioni."> <span class="cassa-check-testo">Ho letto le condizioni di vendita e l'informativa sulla privacy <span class="cassa-dc">[DA CONFERMARE]</span></span></label>
+                        <p class="cassa-errore" id="cassaErrore" role="alert" hidden></p>
+                        <button type="submit" class="btn btn-primary btn-large cassa-paga" id="cassaPaga">
+                            <span class="cassa-paga-testo">Paga <span id="cassaPagaTotale">0,00 €</span></span>
+                        </button>
+                        <p class="cassa-paga-resto" id="cassaPagaResto">+ spedizione da definire</p>
+                    </form>
+
+                    <!-- chi viene a casa: sul computer sempre aperto, accanto; sul telefono una riga sola col totale, che si apre (app.js) -->
+                    <aside class="cassa-riepilogo" aria-labelledby="cassaRiepTitolo">
+                        <details class="cassa-riep-apri" id="cassaRiepApri" open>
+                        <summary class="cassa-riep-titolo"><span id="cassaRiepTitolo">Chi viene a casa con te</span> <span class="cassa-riep-breve" id="cassaRiepBreve"></span></summary>
+                        <ul class="cassa-articoli" id="cassaArticoli"></ul>
+                        <dl class="cassa-righe">
+                            <div><dt>Subtotale</dt><dd id="cassaSubtotale">0,00 €</dd></div>
+                            <div id="cassaRigaRicamo" hidden><dt>Ricamo e bigliettino</dt><dd>[DA CONFERMARE]</dd></div>
+                            <div><dt>Spedizione</dt><dd>[DA CONFERMARE]</dd></div>
+                            <div class="cassa-totale"><dt>Totale parziale</dt><dd id="checkoutTotalVal">0,00 €</dd></div>
+                        </dl>
+                        <p class="pers-aiuto">Spedizione e ricamo si aggiungeranno quando i costi saranno decisi: [DA CONFERMARE].</p>
+                        </details>
+                    </aside>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista Successo Ordine -->
+        <div id="success-view" class="page-view">
+            <section class="success-section">
+                <div class="success-card card-prevention">
+                    <div class="success-icon">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="width: 48px; height: 48px; color: var(--accent-color);">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </div>
+                    <!-- È UNA PROVA: nessun pagamento, nessuna spedizione. Per vendere davvero servono un account Stripe o PayPal,
+                         un piccolo server (crea il pagamento e riceve la conferma), l'email d'ordine, spedizioni e pagine legali -->
+                    <p class="success-prova" role="note"><strong>Ordine di prova.</strong> Nessun pagamento è stato fatto e nessun peluche partirà: questa versione del sito simula l'acquisto.</p>
+                    <h2 class="success-title">Il vostro viaggio continua, <em class="lk-rosa">anche fuori da qui</em>.</h2>
+                    <p class="success-subtitle">Con un ordine vero, <span data-nome>Miele</span> partirebbe per venire da te.</p>
+
+                    <hr class="success-divider">
+
+                    <div class="order-details-box">
+                        <h3>Riepilogo dell'ordine</h3>
+                        <div id="successOrderItems" class="success-order-items">
+                            <!-- Inseriti da JS -->
+                        </div>
+                        <div class="success-totals">
+                            <span>Subtotale (di prova, non addebitato)</span>
+                            <strong id="successTotalPaid">0,00 €</strong>
+                        </div>
+                    </div>
+
+                    <!-- il QR del compagno: il peluche che hai tra le mani è lo stesso che incontri sul sito (app.js) -->
+                    <div class="success-qr" id="successQr" hidden>
+                        <h3>Riconoscilo anche qui</h3>
+                        <p>Inquadra il codice con il telefono: il peluche che hai tra le mani è lo stesso personaggio che incontri sul sito. Ti saluterà per nome.</p>
+                        <div class="success-qr-lista" id="successQrLista"></div>
+                        <p class="success-qr-nota" id="successQrNota" hidden>Il codice apre il sito da cui l'hai creato: funziona dal telefono quando il sito è online. Indirizzo del sito: <span class="cassa-dc">[DA CONFERMARE]</span>.</p>
+                    </div>
+
+                    <p class="success-notice">Con un ordine vero riceveresti una email con il riepilogo e il numero d'ordine. In questa versione di prova non parte nessuna email.</p>
+
+                    <button class="btn btn-primary btn-large" id="successHomeBtn">Torna al tuo posto</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Il mio diario: ogni giorno uno status del cielo e, se vuoi, un pensiero (diario.js). Resta su questo dispositivo -->
+        <div id="diario-view" class="page-view">
+            <section class="diario cassa" aria-labelledby="diarioTitolo">
+                <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+                    <symbol id="cielo-nebbia" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 10c3-2 6 2 9 0s6-2 9 0 4 1 4 1"/><path d="M4 16c3-2 6 2 9 0s6-2 9 0 5 1 5 1" opacity=".75"/><path d="M6 22c3-2 6 2 9 0s6-2 9 0" opacity=".5"/></g></symbol>
+                    <symbol id="cielo-pioggia" viewBox="0 0 32 32"><path d="M9 19a5 5 0 0 1-.6-10 7 7 0 0 1 13.4 1.6A4.3 4.3 0 0 1 23 19z" fill="currentColor" opacity=".9"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 23l-1 3"/><path d="M16 23l-1 3"/><path d="M21 23l-1 3"/></g></symbol>
+                    <symbol id="cielo-tempesta" viewBox="0 0 32 32"><path d="M9 17a5 5 0 0 1-.6-10 7 7 0 0 1 13.4 1.6A4.3 4.3 0 0 1 23 17z" fill="currentColor" opacity=".8"/><path d="M17 15l-4 7h4l-2 6 6-9h-4l2-4z" fill="currentColor"/></symbol>
+                    <symbol id="cielo-luna" viewBox="0 0 32 32"><path d="M20.5 4.5A11 11 0 1 0 27.5 21 9 9 0 0 1 20.5 4.5z" fill="currentColor"/></symbol>
+                    <symbol id="cielo-stellina" viewBox="0 0 32 32"><path d="M16 3c1 6.5 2.5 8 9 9-6.5 1-8 2.5-9 9-1-6.5-2.5-8-9-9 6.5-1 8-2.5 9-9z" fill="currentColor"/><path d="M25 20c.4 2.6 1 3.2 3.6 3.6-2.6.4-3.2 1-3.6 3.6-.4-2.6-1-3.2-3.6-3.6 2.6-.4 3.2-1 3.6-3.6z" fill="currentColor" opacity=".7"/></symbol>
+                </svg>
+                <div class="cassa-testa">
+                    <button class="back-to-home-btn" id="diarioIndietro" type="button"><span class="back-arrow">←</span> Torna indietro</button>
+                    <p class="chapter-num">Il mio diario</p>
+                    <h1 class="cassa-titolo" id="diarioTitolo">Che tempo fa <em class="lk-rosa">dentro di te</em>?</h1>
+                    <p class="cassa-sotto">Scegli lo status che ti rappresenta. Non ci sono risposte sbagliate.</p>
+                </div>
+
+                <div class="diario-oggi">
+                    <h2 class="diario-giorno" id="diarioGiorno">Il tuo cielo di oggi</h2>
+                    <div class="diario-cieli" id="diarioCieli" role="radiogroup" aria-labelledby="diarioGiorno"></div>
+                    <div class="diario-scelta" id="diarioScelta" aria-live="polite" hidden></div>
+                    <div class="form-group pers">
+                        <label for="diarioPensiero">Un pensiero <span class="pers-facoltativo">(facoltativo)</span></label>
+                        <textarea id="diarioPensiero" maxlength="500" rows="4" placeholder="Com'è andata? Anche una parola basta."></textarea>
+                        <span class="diario-conta" id="diarioConta" aria-hidden="true">0/500</span>
+                    </div>
+                    <button class="btn btn-primary" id="diarioSalva" type="button" disabled>Salva la giornata</button>
+                    <p class="diario-esito" id="diarioEsito" role="status"></p>
+                    <!-- un pensiero che preoccupa: l'aiuto vero, fuori dalla storia (niente voce del compagno, niente emoji) -->
+                    <div class="diario-aiuto" id="diarioAiuto" role="alert" hidden>
+                        <p>Quello che hai scritto è importante. Non devi affrontare questo momento senza nessuno.</p>
+                        <p>Se pensi di farti del male o sei in pericolo, chiama adesso il 112. Se vuoi parlare con una persona, Telefono Amico Italia ascolta allo 02 2327 2327, tutti i giorni fino a mezzanotte, anche su WhatsApp al 324 011 7252.</p>
+                        <div class="crisis-actions">
+                            <a class="crisis-call is-primary" href="tel:112">Chiama il 112</a>
+                            <a class="crisis-call" href="tel:+390223272327">Chiama Telefono Amico</a>
+                            <a class="crisis-call" href="https://wa.me/393240117252" target="_blank" rel="noopener">Scrivi su WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diario-giorni">
+                    <h2 class="diario-giorno">I tuoi giorni</h2>
+                    <p class="diario-privato">Il diario resta solo su questo dispositivo, nel browser: nessuno lo legge, nemmeno Laska.</p>
+                    <p class="diario-privato" id="diarioNotaSalva" hidden>Su questo browser il diario non si può salvare: resta solo finché la pagina è aperta.</p>
+                    <div class="diario-mese-testa">
+                        <button class="qty-btn" id="diarioPrima" type="button" aria-label="Il mese prima">‹</button>
+                        <strong id="diarioMeseNome" aria-live="polite"></strong>
+                        <button class="qty-btn" id="diarioDopo" type="button" aria-label="Il mese dopo">›</button>
+                    </div>
+                    <div class="diario-mese" id="diarioMese" tabindex="-1"></div>
+                    <p class="diario-conti" id="diarioConti"></p>
+                    <ol class="diario-lista" id="diarioLista"></ol>
+                    <button class="diario-svuota" id="diarioSvuota" type="button" hidden>Cancella tutto il diario</button>
+                    <div class="diario-svuota-conferma" id="diarioSvuotaConferma" hidden>
+                        <span>Cancellare tutte le giornate? Non si possono recuperare.</span>
+                        <button type="button" data-si="1">Sì, cancella tutto</button>
+                        <button type="button">No</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Vista Stanza della Calma (Rain Video Room) -->
+        <div id="room-view" class="page-view">
+            <div class="room-video-wrapper">
+                <video id="roomVideo" src="assets/camera pioggia.mp4" loop playsinline autoplay muted></video>
+
+                <div class="video-controls-overlay">
+                    <button class="video-control-btn" id="roomBackBtn" aria-label="Torna nella cameretta, dalla finestra"
+                        title="Torna nella cameretta">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn" id="videoPlayPauseBtn" aria-label="Play/Pausa" title="Play/Pausa">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn" id="roomRainBtn" aria-label="La pioggia" title="La pioggia">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="16" y1="13" x2="16" y2="21"></line>
+                            <line x1="8" y1="13" x2="8" y2="21"></line>
+                            <line x1="12" y1="15" x2="12" y2="23"></line>
+                            <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn" id="roomWavesBtn" aria-label="Il mare" title="Il mare">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M2 6c.6 0 1.2-.2 1.8-.6l3-2.4c1.2-1 3.2-1 4.4 0l3 2.4c1.2 1 3.2 1 4.4 0l3-2.4c.6-.4 1.2-.6 1.8-.6" />
+                            <path
+                                d="M2 12c.6 0 1.2-.2 1.8-.6l3-2.4c1.2-1 3.2-1 4.4 0l3 2.4c1.2 1 3.2 1 4.4 0l3-2.4c.6-.4 1.2-.6 1.8-.6" />
+                            <path
+                                d="M2 18c.6 0 1.2-.2 1.8-.6l3-2.4c1.2-1 3.2-1 4.4 0l3 2.4c1.2 1 3.2 1 4.4 0l3-2.4c.6-.4 1.2-.6 1.8-.6" />
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn" id="roomBowlBtn" aria-label="L'aurora" title="L'aurora">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9z" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn" id="roomMountainBtn" aria-label="La montagna" title="La montagna">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3 3 17h18L16 6l-4 6-4-9Z" />
+                        </svg>
+                    </button>
+
+                    <button class="video-control-btn muted" id="videoMuteBtn" aria-label="Muto/Attiva Audio"
+                        title="Spegni Audio">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Laska. Progettato con cura per il benessere emotivo.</p>
+            <p class="footer-disclaimer">Nota: i peluche Laska sono oggetti per il rilassamento e il benessere, non dispositivi medici: non sostituiscono il parere di un medico o di uno psicologo.</p>
+            <p class="footer-crediti">Cuore 3D: <a href="https://sketchfab.com/3d-models/heart-6cb36298cac0488cbab694bd476dda0a" target="_blank" rel="noopener">«Heart»</a> di JadeBarbiier, licenza <a href="https://creativecommons.org/licenses/by/4.0/deed.it" target="_blank" rel="noopener">CC BY 4.0</a> (colore e movimento adattati). Prato 3D: <a href="https://sketchfab.com/3d-models/hand-painted-grasses-f7e6624ac05741a69afa94c6419c91d0" target="_blank" rel="noopener">«Hand Painted Grasses»</a> di PiyalakNuchim, licenza CC BY 4.0 (alleggerito e colorato di notte). Cameretta 3D: <a href="https://sketchfab.com/3d-models/space-room-e26a576aec254053b94f7917e063e2c2" target="_blank" rel="noopener">«Space Room✨»</a> di FutakuNightOwl, licenza <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (senza personaggio, quadri ridipinti, alleggerita). Luna 3D: <a href="https://sketchfab.com/3d-models/moon-4db2273f6dd943b8ad7fa5e3b1b2431a" target="_blank" rel="noopener">«Moon»</a> di Akshat, licenza <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (colorata di viola).</p>
+        </footer>
+
+    </main>
+
+    <!-- Pannello Laterale (Menu Hamburger) -->
+    <div class="side-menu" id="sideMenu" aria-hidden="true">
+        <div class="side-menu-overlay" id="sideMenuOverlay"></div>
+        <div class="side-menu-content">
+            <header class="side-menu-header">
+                <h3>Menu</h3>
+                <button class="close-menu-btn" id="closeMenuBtn" aria-label="Chiudi menu">&times;</button>
+            </header>
+
+            <nav class="side-nav" aria-label="Menu principale">
+                <button class="side-nav-btn side-nav-main" id="sideNavCapireBtn" type="button" data-goto="capire">
+                    <svg class="icon nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Cosa ci succede
+                </button>
+                <button class="side-nav-btn side-nav-main" id="sideNavCompagniBtn" type="button" data-goto="compagno">
+                    <svg class="icon nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.6 1-1.1a5.5 5.5 0 0 0 0-7.7z"/></svg>I compagni
+                </button>
+
+                <button class="side-nav-btn side-nav-main" id="sideNavDiarioBtn" type="button" data-goto="diario">
+                    <svg class="icon nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Il mio diario
+                </button>
+
+                <p class="side-nav-label">Il percorso</p>
+                <div class="side-chapters">
+                    <button class="side-chapter" id="sideChapter1" type="button" data-goto="battito"><b>I</b><span>Il tuo posto</span></button>
+                    <button class="side-chapter" id="sideChapterCameretta" type="button" data-goto="cameretta"><b>☾</b><span>La mia cameretta</span></button>
+                </div>
+
+                <button class="side-nav-btn" id="sideNavRecreateBtn" type="button">
+                    <span class="nav-icon" aria-hidden="true" style="margin-right: 12px; display: inline-flex; width: 20px; justify-content: center;">✦</span>Ricomincia l'incontro
+                </button>
+            </nav>
+
+            <hr class="side-divider">
+
+            <!-- SEZIONE INFORMAZIONI (Facilmente modificabile) -->
+            <section class="side-info-section">
+                <h4><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>Informazioni</h4>
+                <p><strong>Laska</strong> è un progetto dedicato al benessere mentale e al sollievo dallo stress
+                    quotidiano.</p>
+                <p>Realizziamo peluche pesati per il rilassamento, con un cuore che pulsa piano e accompagna il respiro in modo naturale.</p>
+                <p>Il nostro obiettivo è unire la morbidezza del design a semplici tecniche di rilassamento, per offrirti un posto sicuro nelle notti inquiete.</p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Drawer del Carrello (Slide-out da destra) -->
+    <div class="side-menu cart-drawer" id="cartDrawer" aria-hidden="true">
+        <div class="side-menu-overlay" id="cartOverlay"></div>
+        <div class="side-menu-content" role="dialog" aria-modal="true" aria-labelledby="cartTitolo">
+            <header class="side-menu-header">
+                <h3 id="cartTitolo">Chi viene a casa con te</h3>
+                <button class="close-menu-btn" id="closeCartBtn" aria-label="Chiudi carrello">&times;</button>
+            </header>
+
+            <div class="cart-items-container" id="cartItemsList">
+                <div class="cart-empty-message">Per ora nessuno. Il Rifugio è sempre qui.</div>
+            </div>
+
+            <div class="cart-footer-summary" id="cartSummaryBlock" style="display: none;">
+                <div class="cart-summary-row">
+                    <span>Subtotale</span>
+                    <strong id="cartSubtotal">0,00 €</strong>
+                </div>
+                <p class="pers-aiuto" id="cartParziale">Spedizione da definire.</p>
+                <p class="cart-quasi" id="cartQuasi"></p>
+            </div>
+            <button class="btn btn-primary btn-block" id="checkoutBtn" style="margin-top: 1.5rem; gap: 8px;" disabled>
+                Procedi al pagamento
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+            </button>
+            <button type="button" class="cart-continua" id="cartContinua">Continua a esplorare</button>
+        </div>
+    </div>
+
+    <!-- Pulsante Fluttuante Chat (Phase 3) -->
+    <!-- Sul telefono (fino a 767 px): la navigazione in basso, a portata di pollice (styles.css «✦ LAYOUT», app.js).
+         Si fa da parte nell'onboarding, nella cameretta, negli esercizi, in scheda, cassa e conferma, e mentre si scrive.
+         La cameretta resta una stella nel cielo: non è qui. -->
+    <nav class="lk-dock" id="lkDock" aria-label="Navigazione principale">
+        <a class="lk-dock-voce" href="#cap-battito" data-goto="battito"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/><path d="M10.5 19v-4.5h3V19"/></svg><span>Casa</span></a>
+        <a class="lk-dock-voce" href="#nvStelle" data-goto="compagno"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 2.3 4.9 5.2.6-3.9 3.6 1 5.2L12 15.8l-4.6 2.5 1-5.2-3.9-3.6 5.2-.6z"/></svg><span>Compagni</span></a>
+        <a class="lk-dock-voce" href="#diario" data-goto="diario"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5h10.5a1.5 1.5 0 0 1 1.5 1.5v13.5H7.5A1.5 1.5 0 0 1 6 18z"/><path d="M6 18a1.5 1.5 0 0 1 1.5-1.5H18"/><path d="M9.5 8.5h5"/></svg><span>Diario</span></a>
+        <button class="lk-dock-voce" type="button" id="lkDockMenu" aria-controls="sideMenu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5h14M5 12h14M5 16.5h9"/></svg><span>Menu</span></button>
+    </nav>
+
+    <button class="chat-floating-btn" id="chatFloatingBtn" aria-label="Parla con Miele" title="Parla con Miele">
+        <span class="chat-floating-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg></span>
+        <span class="chat-floating-pulse"></span>
+    </button>
+
+    <!-- Emotional Chat Bottom Drawer (Phase 3) -->
+    <div class="chat-drawer" id="chatDrawer">
+        <div class="chat-drawer-overlay" id="chatDrawerOverlay"></div>
+        <div class="chat-drawer-content">
+            <header class="chat-drawer-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">🐰</div>
+                    <div class="chat-title-status">
+                        <h4 id="chatDrawerTitle">Miele ti ascolta</h4>
+                        <span class="chat-status"><span class="chat-status-dot"></span>In ascolto</span>
+                    </div>
+                </div>
+                <button class="chat-close-btn" id="closeChatDrawerBtn" aria-label="Chiudi chat">&times;</button>
+            </header>
+
+            <!-- Message area -->
+            <div class="chat-messages-area" id="chatDrawerMessages" role="log" aria-live="polite">
+                <!-- Initial message dynamically loaded -->
+            </div>
+
+            <!-- Form for message inputs -->
+            <form id="chatDrawerForm" class="chat-input-form">
+                <input type="text" id="chatDrawerInput" placeholder="Raccontagli qualcosa..." autocomplete="off"
+                    maxlength="150" required>
+                <button type="submit" class="chat-send-btn" id="chatDrawerSendBtn" aria-label="Invia">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+            <p class="chat-disclaimer">Sono un compagno, non un terapeuta. Se stai male davvero: <a href="tel:112">112</a> o <a href="tel:+390223272327">Telefono Amico</a>.</p>
+        </div>
+    </div>
+
+    <!-- Script JavaScript -->
+    <!-- Se il modello 3D del cuore si carica, nasconde il cuore di riserva -->
+    <script>
+    (function () {
+        var mv = document.getElementById('rhythmHeartViewer');
+        var fb = document.getElementById('rhythmHeartFallback');
+        if (mv && fb) mv.addEventListener('load', function () { fb.style.display = 'none'; });
+    })();
+    </script>
+
+    <!-- Luna della home: la sua fase la decide il livello di calma (calm.js) -->
+    <script>
+    (function () {
+        var lit = document.getElementById('heroMoonLit');
+        var R = 150, CX = 200, CY = 200;
+        var current = 0.07, raf = null;
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        function shape(f) {      // f = frazione illuminata (0..1), luce a sinistra: forma a "C"
+            var rx = Math.abs(1 - 2 * f) * R;
+            var sweep = f < 0.5 ? 1 : 0;
+            return 'M' + CX + ' ' + (CY - R) +
+                   ' A' + R + ' ' + R + ' 0 0 0 ' + CX + ' ' + (CY + R) +
+                   ' A' + rx.toFixed(2) + ' ' + R + ' 0 0 ' + sweep + ' ' + CX + ' ' + (CY - R) + ' Z';
+        }
+        var moonSvg = lit ? lit.closest('svg') : null;
+        function draw(f) {
+            if (lit) lit.setAttribute('d', shape(f));
+            if (moonSvg) moonSvg.style.setProperty('--lit', f.toFixed(3));   // l'alone cresce con la luna
+        }
+        draw(current);
+        window.LaskaMoon = {
+            shape: shape,
+            get: function () { return current; },
+            set: function (target, ms) {
+                target = Math.max(0.02, Math.min(1, target));
+                if (Math.abs(target - current) < 0.002) return;
+                if (raf) cancelAnimationFrame(raf);
+                var from = current, start = performance.now(), dur = reduce ? 1 : (ms || 2200);
+                (function step(now) {
+                    var k = Math.min(1, (now - start) / dur);
+                    current = from + (target - from) * (0.5 - 0.5 * Math.cos(Math.PI * k));
+                    draw(current);
+                    if (k < 1) raf = requestAnimationFrame(step);
+                })(start);
+            }
+        };
+    })();
+    </script>
+    <script src="onboarding.js?v=20261123b"></script>
+    <script src="calm.js?v=20261111f"></script>
+    <script src="horizontal.js?v=20261114d"></script>
+    <script src="chat-sicurezza.js?v=20261108a"></script>
+    <script src="diario.js?v=20261114b"></script>
+    <script src="app.js?v=20261124a"></script>
+    <script src="scrolly.js?v=20261112a"></script>
+    <script src="notte.js?v=20261123a"></script>
+    <script src="respiro.js?v=20261103a"></script>
+    <script src="leggero.js?v=20261105a"></script>
+    <!-- Prato 3D: three.js (r147, da CDN) + il modello incorporato. Se non si carica resta l'immagine del prato -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+    <script src="assets/luna-modello.js?v=20261123a"></script>
+    <script src="luna3d.js?v=20261123a"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
+    <script src="assets/prato-modello.js"></script>
+    <script src="prato.js?v=20261113a"></script>
+    <!-- Cuori 3D dei peluche: «Heart» di JadeBarbiier (CC BY 4.0), incorporato e alleggerito (25 KB). Parte dopo il caricamento; finché non c'è restano le immagini in assets/cuori -->
+    <script src="assets/cuore-modello.js"></script>
+    <script src="cuore3d.js?v=20261113a"></script>
+    <!-- Il coniglietto 3D («Sleepy Bunny», generato con Meshy AI), in home al posto della foto e nella cameretta.
+         Il modello (assets/coniglio-modello.js, 1,5 MB) e il decoder si caricano dopo la pagina; finché non ci sono resta la foto -->
+    <script src="coniglio3d.js?v=20261121a"></script>
+    <!-- La cameretta 3D, una stella della costellazione (e la stessa voce nel percorso del menu): il compagno chiede aiuto e i sei esercizi si fanno con lui. La sezione Esercizi resta com'è -->
+    <script src="cameretta.js?v=20261124a"></script>
+    <script src="passaggio.js?v=20261123c"></script>
+    <script src="sipario.js?v=20261123a"></script>
+</body>
+
+</html>
